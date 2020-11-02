@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30621.155
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "실시간데이터수집", "실시간데이터수집\실시간데이터수집.csproj", "{2E35750E-62A1-4DA6-843D-6559798F7BAC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E35750E-62A1-4DA6-843D-6559798F7BAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E35750E-62A1-4DA6-843D-6559798F7BAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E35750E-62A1-4DA6-843D-6559798F7BAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E35750E-62A1-4DA6-843D-6559798F7BAC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {41A4E314-C7E4-43F0-985C-0D8E60819905}
+	EndGlobalSection
+EndGlobal
