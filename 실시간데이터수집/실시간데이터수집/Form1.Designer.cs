@@ -37,9 +37,9 @@
             this.종목조회_종목코드 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.종목조회_종목명 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.StockCheDateDataGridView = new System.Windows.Forms.DataGridView();
-            this.csvOutputButton = new System.Windows.Forms.Button();
             this.che_date_check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.che_date = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.csvOutputButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.StockListDataGridView)).BeginInit();
@@ -145,15 +145,6 @@
             this.StockCheDateDataGridView.Size = new System.Drawing.Size(314, 352);
             this.StockCheDateDataGridView.TabIndex = 3;
             // 
-            // csvOutputButton
-            // 
-            this.csvOutputButton.Location = new System.Drawing.Point(540, 40);
-            this.csvOutputButton.Name = "csvOutputButton";
-            this.csvOutputButton.Size = new System.Drawing.Size(133, 23);
-            this.csvOutputButton.TabIndex = 4;
-            this.csvOutputButton.Text = "CSV로 내보내기";
-            this.csvOutputButton.UseVisualStyleBackColor = true;
-            // 
             // che_date_check
             // 
             this.che_date_check.HeaderText = "선택";
@@ -168,6 +159,15 @@
             this.che_date.Name = "che_date";
             this.che_date.ReadOnly = true;
             this.che_date.Width = 125;
+            // 
+            // csvOutputButton
+            // 
+            this.csvOutputButton.Location = new System.Drawing.Point(540, 40);
+            this.csvOutputButton.Name = "csvOutputButton";
+            this.csvOutputButton.Size = new System.Drawing.Size(133, 23);
+            this.csvOutputButton.TabIndex = 4;
+            this.csvOutputButton.Text = "CSV로 내보내기";
+            this.csvOutputButton.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
