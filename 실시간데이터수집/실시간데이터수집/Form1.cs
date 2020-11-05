@@ -12,30 +12,95 @@ using System.Data.SQLite;
 using System.Globalization;
 using System.Collections;
 using System.Diagnostics;
+using System.IO;
+using System.Threading;
 
 namespace 실시간데이터수집
 {
     public partial class Form1 : Form
     {
-        int screenNum = 1000;
-        string[] stockCodeList;
-        string[] kosdaqCodeList;
+        int screenNum = 1000;   // 스크린 번호
+        string[] stockCodeArr;  // 종목코드(장내, 코스닥) 배열
         private SQLiteConnection conn = null;
+        private StreamWriter writer;
         private string csvWriteForStockCode;
+        private string che_data_str;
+        private string[] che_data_arr;
+        SQLiteCommand cmd = new SQLiteCommand();
         Stopwatch sw = new Stopwatch();
         public Form1()
         {
             InitializeComponent();
 
             axKHOpenAPI1.OnEventConnect += API_onEventConnect;
-            // axKHOpenAPI1.OnReceiveRealData += API_onReceiveData;
+            axKHOpenAPI1.OnReceiveRealData += API_onReceiveData;
             StockSearchButton.Click += stockSearch ;
             csvOutputButton.Click += csvWriteCheDataBtnClick;
 
             axKHOpenAPI1.CommConnect();
         }
 
-        
+        // STOCK_CHE 테이블 Insert
+        private void cheDataDBInsert(string[] cheDataArr)
+        {
+            string sql = "insert into stock_che (che_stock_code, che_date, che_time, che_price, che_change, che_change_rate, che_volume, che_cumulative_volume, che_cumulative_amount, che_open, che_high, che_low, che_trans_amount_change, che_vp, che_market_cap) VALUES (@che_stock_code, @che_date, @che_time, @che_price, @che_change, @che_change_rate, @che_volume, @che_cumulative_volume, @che_cumulative_amount, @che_open, @che_high, @che_low, @che_trans_amount_change, @che_vp, @che_market_cap)";
+            // SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+
+            cmd.Connection = conn;
+            cmd.CommandText = sql;
+
+            cmd.Parameters.Add("@che_stock_code", DbType.String);
+            cmd.Parameters.Add("@che_date", DbType.String);
+            cmd.Parameters.Add("@che_time", DbType.String);
+            cmd.Parameters.Add("@che_price", DbType.String);
+            cmd.Parameters.Add("@che_change", DbType.String);
+            cmd.Parameters.Add("@che_change_rate", DbType.String);
+            cmd.Parameters.Add("@che_volume", DbType.String);
+            cmd.Parameters.Add("@che_cumulative_volume", DbType.String);
+            cmd.Parameters.Add("@che_cumulative_amount", DbType.String);
+            cmd.Parameters.Add("@che_open", DbType.String);
+            cmd.Parameters.Add("@che_high", DbType.String);
+            cmd.Parameters.Add("@che_low", DbType.String);
+            cmd.Parameters.Add("@che_trans_amount_change", DbType.String);
+            cmd.Parameters.Add("@che_vp", DbType.String);
+            cmd.Parameters.Add("@che_market_cap", DbType.String);
+            cmd.Prepare();
+
+            cmd.Parameters[0].Value = cheDataArr[0];
+            cmd.Parameters[1].Value = cheDataArr[1];
+            cmd.Parameters[2].Value = cheDataArr[2];
+            cmd.Parameters[3].Value = cheDataArr[3];
+            cmd.Parameters[4].Value = cheDataArr[4];
+            cmd.Parameters[5].Value = cheDataArr[5];
+            cmd.Parameters[6].Value = cheDataArr[6];
+            cmd.Parameters[7].Value = cheDataArr[7];
+            cmd.Parameters[8].Value = cheDataArr[8];
+            cmd.Parameters[9].Value = cheDataArr[9];
+            cmd.Parameters[10].Value = cheDataArr[10];
+            cmd.Parameters[11].Value = cheDataArr[11];
+            cmd.Parameters[12].Value = cheDataArr[12];
+            cmd.Parameters[13].Value = cheDataArr[13];
+            cmd.Parameters[14].Value = cheDataArr[14];
+            cmd.ExecuteNonQuery();
+        }
+
+        private void writeCsvToDB()
+        {
+            StreamReader sr = new StreamReader(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock_update.csv");
+            sr.ReadLine(); // 맨 첫줄 애트리뷰트명 읽어서 날리기
+            while (!sr.EndOfStream)
+            {
+                che_data_str = sr.ReadLine();
+                che_data_arr = che_data_str.Split(',');
+                cheDataDBInsert(che_data_arr);
+            }
+        }
+
+        private void csvFileWrite(string che_stock_code, string che_date, string che_time, string che_price, string che_change, string che_change_rate, string che_volume, string che_cumulative_volume, string che_cumulative_amount, string che_open, string che_high, string che_low, string che_trans_amount_change, string che_vp, string che_market_cap)
+        {
+            writer.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}", che_stock_code, che_date, che_time, che_price, che_change, che_change_rate, che_volume, che_cumulative_volume, che_cumulative_amount, che_open, che_high, che_low, che_trans_amount_change, che_vp, che_market_cap);
+        }
+
 
         private void stockSearch(Object sender, EventArgs e) 
         {
@@ -44,27 +109,37 @@ namespace 실시간데이터수집
             Console.WriteLine("검색명 : " + searchStockTitle);
             if(searchStockTitle.Length == 0)
             {
-                for (int i = 0; i < stockCodeList.Length - 1; i++)
+                for (int i = 0; i < stockCodeArr.Length - 1; i++)
                 {
                     StockListDataGridView.Rows.Add();
-                    StockListDataGridView["종목조회_종목코드", i].Value = stockCodeList[i];
-                    StockListDataGridView["종목조회_종목명", i].Value = axKHOpenAPI1.GetMasterCodeName(stockCodeList[i]);
+                    StockListDataGridView["종목조회_종목코드", i].Value = stockCodeArr[i];
+                    StockListDataGridView["종목조회_종목명", i].Value = axKHOpenAPI1.GetMasterCodeName(stockCodeArr[i]);
                 }
             }
             else
             {
                 int idx = 0;
-                for (int i = 0; i < stockCodeList.Length - 1; i++)
+                for (int i = 0; i < stockCodeArr.Length - 1; i++)
                 {
-                    if(stockCodeList[i].Contains(searchStockTitle) || axKHOpenAPI1.GetMasterCodeName(stockCodeList[i]).Contains(searchStockTitle))
+                    if(stockCodeArr[i].Contains(searchStockTitle) || axKHOpenAPI1.GetMasterCodeName(stockCodeArr[i]).Contains(searchStockTitle))
                     {
                         StockListDataGridView.Rows.Add();
-                        StockListDataGridView["종목조회_종목코드", idx].Value = stockCodeList[i];
-                        StockListDataGridView["종목조회_종목명", idx].Value = axKHOpenAPI1.GetMasterCodeName(stockCodeList[i]);
+                        StockListDataGridView["종목조회_종목코드", idx].Value = stockCodeArr[i];
+                        StockListDataGridView["종목조회_종목명", idx].Value = axKHOpenAPI1.GetMasterCodeName(stockCodeArr[i]);
                         idx++;
                     }
                 }
             }
+        }
+
+        private void processInit()
+        {
+            // DB 연결
+            dbConnect();
+            
+            // Write 파일 객체 초기화
+            // writer = File.AppendText(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock_update.csv");
+            // writer.WriteLine("che_stock_code,che_date,che_time,che_price,che_change,che_change_rate,che_volume,che_cumulative_volume,che_cumulative_amount,che_open,che_high,che_low,che_trans_amount_change,che_vp,che_market_cap");
         }
 
         private void API_onEventConnect(object sender, AxKHOpenAPILib._DKHOpenAPIEvents_OnEventConnectEvent e)
@@ -72,7 +147,13 @@ namespace 실시간데이터수집
             if (e.nErrCode == 0)
             {
                 Console.WriteLine("로그인 성공");
-                getStockCode();
+                processInit(); // 초기 작업
+
+                Thread t1 = new Thread(new ThreadStart(writeCsvToDB));
+                t1.Start();
+                // writeCsvToDB();
+
+                // getStockCode();
                 // stockReaTimeDataRequest();
             }
             else
@@ -87,12 +168,19 @@ namespace 실시간데이터수집
             {
                 // Console.WriteLine("실시간 데이터 : " + e.sRealData);
                 // Console.WriteLine("종목 코드 : " + e.sRealKey + ", 현재가 : " + axKHOpenAPI1.GetCommRealData(e.sRealKey, 10) + ", 체결시간 : " + axKHOpenAPI1.GetCommRealData(e.sRealKey, 20));
+
+                // e.sRealKey
+                // 종목코드, 체결날짜, 체결시간, 현재가, 전일대비, 등락율, 거래량, 누적거래량, 누적거래대금, 시가, 고가, 저가, 거래대금증감, 체결강도, 시가총액
+                csvFileWrite(e.sRealKey, DateTime.Now.ToString("yyyy-MM-dd"), axKHOpenAPI1.GetCommRealData(e.sRealKey, 20).Insert(4,":").Insert(2,":"), axKHOpenAPI1.GetCommRealData(e.sRealKey, 10), axKHOpenAPI1.GetCommRealData(e.sRealKey, 11), axKHOpenAPI1.GetCommRealData(e.sRealKey, 12), axKHOpenAPI1.GetCommRealData(e.sRealKey, 15), axKHOpenAPI1.GetCommRealData(e.sRealKey, 13), axKHOpenAPI1.GetCommRealData(e.sRealKey, 14), axKHOpenAPI1.GetCommRealData(e.sRealKey, 16), axKHOpenAPI1.GetCommRealData(e.sRealKey, 17), axKHOpenAPI1.GetCommRealData(e.sRealKey, 18), axKHOpenAPI1.GetCommRealData(e.sRealKey, 29), axKHOpenAPI1.GetCommRealData(e.sRealKey, 228), axKHOpenAPI1.GetCommRealData(e.sRealKey, 311));
+
+                /*
                 // DB 삽입
                 sw.Start();
                 stockRealTimeDataDBInsert(e.sRealKey, datetimePreProcess(axKHOpenAPI1.GetCommRealData(e.sRealKey, 20)), axKHOpenAPI1.GetCommRealData(e.sRealKey, 10), axKHOpenAPI1.GetCommRealData(e.sRealKey, 11), axKHOpenAPI1.GetCommRealData(e.sRealKey, 12), axKHOpenAPI1.GetCommRealData(e.sRealKey, 27), axKHOpenAPI1.GetCommRealData(e.sRealKey, 28), axKHOpenAPI1.GetCommRealData(e.sRealKey, 15), axKHOpenAPI1.GetCommRealData(e.sRealKey, 13));
                 sw.Stop();
-                Console.WriteLine("체결 시간 : " + axKHOpenAPI1.GetCommRealData(e.sRealKey, 20) + "출력 시간 : " + DateTime.Now + ", Insert 되는 시간 : " + sw.ElapsedMilliseconds.ToString());
+                Console.WriteLine("체결시간 : " + axKHOpenAPI1.GetCommRealData(e.sRealKey, 20) + ", 현재시간 : " + DateTime.Now + ", DB 삽입시간 : " + sw.ElapsedMilliseconds.ToString());
                 sw.Reset();
+                */
             }
             else
             {
@@ -166,32 +254,18 @@ namespace 실시간데이터수집
         {
             // 실시간 연결 요청
             string stockCodeStr = "";
-            for(int i=0; i<stockCodeList.Length-1; i++)
+            for(int i=0; i< stockCodeArr.Length; i++)
             {
-                stockCodeStr += (stockCodeList[i]+";");
+                stockCodeStr += (stockCodeArr[i]+";");
                 // 한번 등록가능한 종목이 100개 => 100으로 나눴을때 나머지가 99이면 요청
                 // 마지막 인덱스에 도달했으면 요청
-                if((i % 100 == 99) || (i == (stockCodeList.Length-2)))
+                if((i % 100 == 99) || (i == (stockCodeArr.Length-1)))
                 {
-                    Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@장내 데이터 호출@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                    Console.WriteLine(i + "번째까지의 장내 데이터 호출");
                     axKHOpenAPI1.SetRealReg(getScreenNum(), stockCodeStr, "10", "1");
                     stockCodeStr = "";
                 }
             }
-            Console.WriteLine("================================장내 데이터 요청 끝=======================================");
-            for (int i = 0; i < kosdaqCodeList.Length - 1; i++)
-            {
-                stockCodeStr += (kosdaqCodeList[i] + ";");
-                // 한번 등록가능한 종목이 100개 => 100으로 나눴을때 나머지가 99이면 요청
-                // 마지막 인덱스에 도달했으면 요청
-                if ((i % 100 == 99) || (i == (kosdaqCodeList.Length - 2)))
-                {
-                    Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@코스닥 호출@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-                    axKHOpenAPI1.SetRealReg(getScreenNum(), stockCodeStr, "10", "1");
-                    stockCodeStr = "";
-                }
-            }
-            Console.WriteLine("================================장내 데이터 요청 끝=======================================");
         }
 
 
@@ -199,14 +273,12 @@ namespace 실시간데이터수집
         private void getStockCode()
         {
             // 종목코드
-            string stockCodeListStr = axKHOpenAPI1.GetCodeListByMarket("0"); // 장내
-            string kosdaqCodeListStr = axKHOpenAPI1.GetCodeListByMarket("10"); // 코스닥
-            stockCodeList = stockCodeListStr.Split(';');
-            kosdaqCodeList = kosdaqCodeListStr.Split(';');
+            string stockCodeListStr = axKHOpenAPI1.GetCodeListByMarket("0") + axKHOpenAPI1.GetCodeListByMarket("10"); // 장내 + 코스닥
+            stockCodeArr = stockCodeListStr.Substring(0, stockCodeListStr.Length - 1).Split(';');
 
+            /*
             // 디비에서 종목 가져오기 -> 해쉬테이블에 저장
             Hashtable hashStockCode = new Hashtable();
-            dbConnect();
             string sql = "select stock_code, stock_name from stock";
             SQLiteCommand cmd = new SQLiteCommand(sql, conn);
             SQLiteDataReader rdr = cmd.ExecuteReader();
@@ -229,15 +301,8 @@ namespace 실시간데이터수집
                 StockListDataGridView["종목조회_종목코드", i].Value = stockCodeList[i];
                 StockListDataGridView["종목조회_종목명", i].Value = axKHOpenAPI1.GetMasterCodeName(stockCodeList[i]);
             }
-            for (int i = 0; i < kosdaqCodeList.Length - 1; i++)
-            {
-                if (!hashStockCode.ContainsKey(kosdaqCodeList[i]))
-                {
-                    // 디비에 종목코드가 없다면 insert 해준다.
-                    Console.WriteLine("종목 코드 : " + kosdaqCodeList[i] + ", 종목명 : " + axKHOpenAPI1.GetMasterCodeName(kosdaqCodeList[i]));
-                    stockDBInesrt(kosdaqCodeList[i], axKHOpenAPI1.GetMasterCodeName(kosdaqCodeList[i]));
-                }
-            }
+
+            */
         }
 
         // 날짜 변환
