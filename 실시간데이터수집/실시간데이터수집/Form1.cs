@@ -14,6 +14,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Runtime.Remoting.Channels;
 
 namespace 실시간데이터수집
 {
@@ -28,6 +29,8 @@ namespace 실시간데이터수집
         private string[] che_data_arr;
         SQLiteCommand cmd = new SQLiteCommand();
         Stopwatch sw = new Stopwatch();
+        private SQLiteTransaction transaction;
+
         public Form1()
         {
             InitializeComponent();
@@ -41,59 +44,81 @@ namespace 실시간데이터수집
         }
 
         // STOCK_CHE 테이블 Insert
-        private void cheDataDBInsert(string[] cheDataArr)
+        private void cheDataDBInsert(List<string[]> cheDataList)
         {
-            string sql = "insert into stock_che (che_stock_code, che_date, che_time, che_price, che_change, che_change_rate, che_volume, che_cumulative_volume, che_cumulative_amount, che_open, che_high, che_low, che_trans_amount_change, che_vp, che_market_cap) VALUES (@che_stock_code, @che_date, @che_time, @che_price, @che_change, @che_change_rate, @che_volume, @che_cumulative_volume, @che_cumulative_amount, @che_open, @che_high, @che_low, @che_trans_amount_change, @che_vp, @che_market_cap)";
-            // SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+            transaction = conn.BeginTransaction();
+            foreach (string[] cheDataArr in cheDataList)
+            {
+                string sql = "insert into stock_che2 (che_stock_code, che_date, che_time, che_price, che_change, che_change_rate, che_volume, che_cumulative_volume, che_cumulative_amount, che_open, che_high, che_low, che_trans_amount_change, che_vp, che_market_cap) VALUES (@che_stock_code, @che_date, @che_time, @che_price, @che_change, @che_change_rate, @che_volume, @che_cumulative_volume, @che_cumulative_amount, @che_open, @che_high, @che_low, @che_trans_amount_change, @che_vp, @che_market_cap)";
+                // SQLiteCommand cmd = new SQLiteCommand(sql, conn);
 
-            cmd.Connection = conn;
-            cmd.CommandText = sql;
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
 
-            cmd.Parameters.Add("@che_stock_code", DbType.String);
-            cmd.Parameters.Add("@che_date", DbType.String);
-            cmd.Parameters.Add("@che_time", DbType.String);
-            cmd.Parameters.Add("@che_price", DbType.String);
-            cmd.Parameters.Add("@che_change", DbType.String);
-            cmd.Parameters.Add("@che_change_rate", DbType.String);
-            cmd.Parameters.Add("@che_volume", DbType.String);
-            cmd.Parameters.Add("@che_cumulative_volume", DbType.String);
-            cmd.Parameters.Add("@che_cumulative_amount", DbType.String);
-            cmd.Parameters.Add("@che_open", DbType.String);
-            cmd.Parameters.Add("@che_high", DbType.String);
-            cmd.Parameters.Add("@che_low", DbType.String);
-            cmd.Parameters.Add("@che_trans_amount_change", DbType.String);
-            cmd.Parameters.Add("@che_vp", DbType.String);
-            cmd.Parameters.Add("@che_market_cap", DbType.String);
-            cmd.Prepare();
+                cmd.Parameters.Add("@che_stock_code", DbType.String);
+                cmd.Parameters.Add("@che_date", DbType.String);
+                cmd.Parameters.Add("@che_time", DbType.String);
+                cmd.Parameters.Add("@che_price", DbType.String);
+                cmd.Parameters.Add("@che_change", DbType.String);
+                cmd.Parameters.Add("@che_change_rate", DbType.String);
+                cmd.Parameters.Add("@che_volume", DbType.String);
+                cmd.Parameters.Add("@che_cumulative_volume", DbType.String);
+                cmd.Parameters.Add("@che_cumulative_amount", DbType.String);
+                cmd.Parameters.Add("@che_open", DbType.String);
+                cmd.Parameters.Add("@che_high", DbType.String);
+                cmd.Parameters.Add("@che_low", DbType.String);
+                cmd.Parameters.Add("@che_trans_amount_change", DbType.String);
+                cmd.Parameters.Add("@che_vp", DbType.String);
+                cmd.Parameters.Add("@che_market_cap", DbType.String);
+                cmd.Prepare();
 
-            cmd.Parameters[0].Value = cheDataArr[0];
-            cmd.Parameters[1].Value = cheDataArr[1];
-            cmd.Parameters[2].Value = cheDataArr[2];
-            cmd.Parameters[3].Value = cheDataArr[3];
-            cmd.Parameters[4].Value = cheDataArr[4];
-            cmd.Parameters[5].Value = cheDataArr[5];
-            cmd.Parameters[6].Value = cheDataArr[6];
-            cmd.Parameters[7].Value = cheDataArr[7];
-            cmd.Parameters[8].Value = cheDataArr[8];
-            cmd.Parameters[9].Value = cheDataArr[9];
-            cmd.Parameters[10].Value = cheDataArr[10];
-            cmd.Parameters[11].Value = cheDataArr[11];
-            cmd.Parameters[12].Value = cheDataArr[12];
-            cmd.Parameters[13].Value = cheDataArr[13];
-            cmd.Parameters[14].Value = cheDataArr[14];
-            cmd.ExecuteNonQuery();
+                cmd.Parameters[0].Value = cheDataArr[0];
+                cmd.Parameters[1].Value = cheDataArr[1];
+                cmd.Parameters[2].Value = cheDataArr[2];
+                cmd.Parameters[3].Value = cheDataArr[3];
+                cmd.Parameters[4].Value = cheDataArr[4];
+                cmd.Parameters[5].Value = cheDataArr[5];
+                cmd.Parameters[6].Value = cheDataArr[6];
+                cmd.Parameters[7].Value = cheDataArr[7];
+                cmd.Parameters[8].Value = cheDataArr[8];
+                cmd.Parameters[9].Value = cheDataArr[9];
+                cmd.Parameters[10].Value = cheDataArr[10];
+                cmd.Parameters[11].Value = cheDataArr[11];
+                cmd.Parameters[12].Value = cheDataArr[12];
+                cmd.Parameters[13].Value = cheDataArr[13];
+                cmd.Parameters[14].Value = cheDataArr[14];
+                cmd.ExecuteNonQuery();
+            }
+            transaction.Commit();
         }
 
         private void writeCsvToDB()
         {
-            StreamReader sr = new StreamReader(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock_update.csv");
-            sr.ReadLine(); // 맨 첫줄 애트리뷰트명 읽어서 날리기
+            int idx = 0;
+            StreamReader sr = new StreamReader(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv");
+            List<string[]> che_data_list = new List<string[]>();
+            sw.Start();
             while (!sr.EndOfStream)
             {
                 che_data_str = sr.ReadLine();
                 che_data_arr = che_data_str.Split(',');
-                cheDataDBInsert(che_data_arr);
+                if (che_data_arr.Length == 15)
+                {
+                    che_data_list.Add(che_data_arr);
+                    idx++;
+                }
+                if (idx % 1000 == 0)
+                {
+                    cheDataDBInsert(che_data_list);
+                    che_data_list.Clear();
+                }
             }
+            if(che_data_list.Count > 0)
+            {
+                cheDataDBInsert(che_data_list);
+            }
+            sw.Stop();
+            Console.WriteLine("걸린 시간 : " + sw.ElapsedMilliseconds);
         }
 
         private void csvFileWrite(string che_stock_code, string che_date, string che_time, string che_price, string che_change, string che_change_rate, string che_volume, string che_cumulative_volume, string che_cumulative_amount, string che_open, string che_high, string che_low, string che_trans_amount_change, string che_vp, string che_market_cap)
@@ -136,9 +161,8 @@ namespace 실시간데이터수집
         {
             // DB 연결
             dbConnect();
-            
             // Write 파일 객체 초기화
-            // writer = File.AppendText(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock_update.csv");
+            // writer = File.AppendText(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv");
             // writer.WriteLine("che_stock_code,che_date,che_time,che_price,che_change,che_change_rate,che_volume,che_cumulative_volume,che_cumulative_amount,che_open,che_high,che_low,che_trans_amount_change,che_vp,che_market_cap");
         }
 
@@ -147,11 +171,15 @@ namespace 실시간데이터수집
             if (e.nErrCode == 0)
             {
                 Console.WriteLine("로그인 성공");
-                processInit(); // 초기 작업
+                // processInit(); // 초기 작업
 
-                Thread t1 = new Thread(new ThreadStart(writeCsvToDB));
-                t1.Start();
+                // Thread t1 = new Thread(new ThreadStart(writeCsvToDB));
+                // t1.Start();
+
                 // writeCsvToDB();
+
+                BackgroundWorker bw = new BackgroundWorker();
+                bw.ReadCSV();
 
                 // getStockCode();
                 // stockReaTimeDataRequest();

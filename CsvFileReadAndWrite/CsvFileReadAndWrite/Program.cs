@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CsvFileReadAndWrite
 {
@@ -18,6 +19,11 @@ namespace CsvFileReadAndWrite
 
         static void Main(string[] args)
         {
+
+            Test t = new Test();
+            t.ReadFile();
+
+            /*
             StreamReader sr = new StreamReader(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock_update.csv");
             int i = 0;
             Console.WriteLine(sr.ReadLine());
@@ -28,6 +34,7 @@ namespace CsvFileReadAndWrite
                 i++;
                 if (i > 10) break;
             }
+            */
 
             /*
             Stopwatch sw = new Stopwatch();
@@ -39,7 +46,6 @@ namespace CsvFileReadAndWrite
             {
                 OnReceiveRealData(sr.ReadLine());
             }
-
             writer.Close();
             */
 
@@ -76,11 +82,9 @@ namespace CsvFileReadAndWrite
                         str += (temp[j] + ", ");
                     }
                     file.WriteLine(str.Substring(0, str.Length - 2));
-
                     i++;
                     // if (i > 10) break;
                     Console.WriteLine("i : " + i);
-
                 }
             }
             */
