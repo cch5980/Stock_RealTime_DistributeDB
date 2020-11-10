@@ -179,7 +179,9 @@ namespace 실시간데이터수집
                 // writeCsvToDB();
 
                 BackgroundWorker bw = new BackgroundWorker();
-                bw.ReadCSV();
+                Database.DBConnect();
+                Thread t1 = new Thread(bw.ReadAndInsert);
+                t1.Start();
 
                 // getStockCode();
                 // stockReaTimeDataRequest();

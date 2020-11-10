@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +11,7 @@ namespace CsvFileReadAndWrite
     class Program
     {
         static StreamWriter writer;
+        static int offset = 0;
 
         static void OnReceiveRealData(string s)
         {
@@ -19,9 +22,41 @@ namespace CsvFileReadAndWrite
 
         static void Main(string[] args)
         {
+            writer = File.AppendText(@"C:\\Users\\cch\\Desktop\\실시간주가\\test4.csv");
+            IEnumerable<string> fileStr = File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            while (File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv").Skip(offset).Count() > 0)
+            {
+                sw.Stop();
+                Console.WriteLine("걸린 시간1 : " + sw.ElapsedMilliseconds);
+                sw.Restart();
+                string[] file_data_arr = File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv").Skip(offset).Take(100).ToArray();
+                sw.Stop();
+                Console.WriteLine("걸린 시간2 : " + sw.ElapsedMilliseconds);
+                sw.Restart();
 
-            Test t = new Test();
-            t.ReadFile();
+
+                int idx = 0;
+                Console.WriteLine(file_data_arr.Length);
+                foreach (string che_data_str in file_data_arr)
+                {
+                    writer.WriteLine(che_data_str);
+                    idx++;
+                    if (idx == 1000) break;
+                    Console.WriteLine("idx : " + idx + ", str : " + che_data_str);
+                }
+                offset += idx;
+                sw.Stop();
+                Console.WriteLine("걸린 시간3 : " + sw.ElapsedMilliseconds);
+                Console.WriteLine("offset : " + offset);
+                break;
+            }
+            
+
+
+            // Test t = new Test();
+            // t.ReadFile();
 
             /*
             StreamReader sr = new StreamReader(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock_update.csv");
