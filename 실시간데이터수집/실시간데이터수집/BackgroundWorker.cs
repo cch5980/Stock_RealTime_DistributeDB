@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,34 +12,54 @@ namespace 실시간데이터수집
     class BackgroundWorker
     {
         int offset = 0;
+        Stopwatch sw = new Stopwatch();
+        int idx = 0;
 
         public void ReadAndInsert()
         {
+            sw.Start();
             while(isReadFileRemainData())
             {
                 CheDataDBInsert(ReadCSV());
+                if(idx == 10)
+                {
+                    sw.Stop();
+                    Console.WriteLine("DB 삽입 걸린 시간 : " + sw.ElapsedMilliseconds);
+                }
+                idx++;
             }
         }
 
         public Boolean isReadFileRemainData()
         {
-            int remainDataNum = File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv").Skip(offset).Count();
+            sw.Restart();
+            int remainDataNum = File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv").Skip(offset).Take(1000).Count();
+            sw.Stop();
+            Console.WriteLine("버틀넥1 : " + sw.ElapsedMilliseconds);
             if (remainDataNum > 0) return true;
             else return false;
         }
 
         public List<string[]> ReadCSV()
         {
+            sw.Restart();
             List<string[]> che_data_list = new List<string[]>();
-            string[] file_data_arr = File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv").Skip(offset).ToArray();
+            sw.Stop();
+            Console.WriteLine("버틀넥2 : " + sw.ElapsedMilliseconds);
+            sw.Restart();
+            string[] file_data_arr = File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv").Skip(offset).Take(1000).ToArray();
+            sw.Stop();
+            Console.WriteLine("버틀넥3 : " + sw.ElapsedMilliseconds);
+            sw.Restart();
             int idx = 0;
             foreach(string che_data_str in file_data_arr)
             {
                 string[] che_data_arr = che_data_str.Split(',');
                 che_data_list.Add(che_data_arr);
                 idx++;
-                if (idx == 1000) break;
             }
+            sw.Stop();
+            Console.WriteLine("버틀넥4 : " + sw.ElapsedMilliseconds);
             offset += idx;
             Console.WriteLine("offset : " + offset);
             return che_data_list;
@@ -46,6 +67,7 @@ namespace 실시간데이터수집
 
         public void CheDataDBInsert(List<string[]> cheDataList)
         {
+            sw.Restart();
             Database.transaction = Database.conn.BeginTransaction();
             foreach (string[] cheDataArr in cheDataList)
             {
@@ -90,6 +112,8 @@ namespace 실시간데이터수집
                 Database.cmd.ExecuteNonQuery();
             }
             Database.transaction.Commit();
+            sw.Stop();
+            Console.WriteLine("버틀넥5 : " + sw.ElapsedMilliseconds);
         }
 
 

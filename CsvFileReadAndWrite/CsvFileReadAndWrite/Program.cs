@@ -22,16 +22,46 @@ namespace CsvFileReadAndWrite
 
         static void Main(string[] args)
         {
-            writer = File.AppendText(@"C:\\Users\\cch\\Desktop\\실시간주가\\test4.csv");
-            IEnumerable<string> fileStr = File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv");
+            // writer = File.AppendText(@"C:\\Users\\cch\\Desktop\\실시간주가\\test4.csv");
+            // IEnumerable<string> fileStr = File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv");
             Stopwatch sw = new Stopwatch();
             sw.Start();
+            IEnumerable<string> fileStr = File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\test4.csv");
+            sw.Stop();
+            Console.WriteLine("걸린 시간1 : " + sw.ElapsedMilliseconds);
+            sw.Restart();
+            IEnumerable<string> fileStr2 = fileStr.Skip(0);
+            sw.Stop();
+            Console.WriteLine("걸린 시간2 : " + sw.ElapsedMilliseconds);
+            sw.Restart();
+            IEnumerable<string> fileStr3 = fileStr2.Take(1200);
+            sw.Stop();
+            Console.WriteLine("걸린 시간3 : " + sw.ElapsedMilliseconds);
+            sw.Restart();
+            string[] strArr = fileStr3.ToArray();
+            sw.Stop();
+            Console.WriteLine("걸린 시간4 : " + sw.ElapsedMilliseconds);
+            Console.WriteLine("배열 개수 : " + strArr.Length);
+
+            int idx = 0;
+            foreach(string str in strArr)
+            {
+                // writer.WriteLine(str);
+                Console.WriteLine("idx : " + idx + "@" + str);
+                idx++;
+            }
+            Console.WriteLine(strArr.Length);
+            // writer.Flush();
+            
+
+            /*
+            sw.Restart();
             while (File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv").Skip(offset).Count() > 0)
             {
                 sw.Stop();
                 Console.WriteLine("걸린 시간1 : " + sw.ElapsedMilliseconds);
                 sw.Restart();
-                string[] file_data_arr = File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv").Skip(offset).Take(100).ToArray();
+                string[] file_data_arr = File.ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv").Skip(offset).ToArray();
                 sw.Stop();
                 Console.WriteLine("걸린 시간2 : " + sw.ElapsedMilliseconds);
                 sw.Restart();
@@ -44,7 +74,6 @@ namespace CsvFileReadAndWrite
                     writer.WriteLine(che_data_str);
                     idx++;
                     if (idx == 1000) break;
-                    Console.WriteLine("idx : " + idx + ", str : " + che_data_str);
                 }
                 offset += idx;
                 sw.Stop();
@@ -52,7 +81,7 @@ namespace CsvFileReadAndWrite
                 Console.WriteLine("offset : " + offset);
                 break;
             }
-            
+            */
 
 
             // Test t = new Test();
