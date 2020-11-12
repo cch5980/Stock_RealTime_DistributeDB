@@ -22,6 +22,7 @@ namespace 실시간데이터수집
     {
         int screenNum = 1000;   // 스크린 번호
         string[] stockCodeArr;  // 종목코드(장내, 코스닥) 배열
+        // private BackgroundWorker worker;
         private SQLiteConnection conn = null;
         private StreamWriter writer;
         private string csvWriteForStockCode;
@@ -160,10 +161,18 @@ namespace 실시간데이터수집
         private void processInit()
         {
             // DB 연결
-            dbConnect();
+            Database.DBConnect();
+            Boolean isFileExist = false;
             // Write 파일 객체 초기화
-            // writer = File.AppendText(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201106).csv");
-            // writer.WriteLine("che_stock_code,che_date,che_time,che_price,che_change,che_change_rate,che_volume,che_cumulative_volume,che_cumulative_amount,che_open,che_high,che_low,che_trans_amount_change,che_vp,che_market_cap");
+            // writer = File.AppendText(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201112).csv");
+            // writer.Close();
+            if (File.Exists(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201112).csv"))
+            {
+                isFileExist = true;
+            }
+            FileStream fs = File.Open(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201112).csv", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            writer = new StreamWriter(fs);
+            if(!isFileExist) writer.WriteLine("che_stock_code,che_date,che_time,che_price,che_change,che_change_rate,che_volume,che_cumulative_volume,che_cumulative_amount,che_open,che_high,che_low,che_trans_amount_change,che_vp,che_market_cap");
         }
 
         private void API_onEventConnect(object sender, AxKHOpenAPILib._DKHOpenAPIEvents_OnEventConnectEvent e)
@@ -171,20 +180,29 @@ namespace 실시간데이터수집
             if (e.nErrCode == 0)
             {
                 Console.WriteLine("로그인 성공");
-                // processInit(); // 초기 작업
+                processInit(); // 초기 작업
+
+                getStockCode();
+                stockReaTimeDataRequest();
 
                 // Thread t1 = new Thread(new ThreadStart(writeCsvToDB));
                 // t1.Start();
-
                 // writeCsvToDB();
 
-                BackgroundWorker bw = new BackgroundWorker();
-                Database.DBConnect();
-                Thread t1 = new Thread(bw.ReadAndInsert);
-                t1.Start();
+                // Database.DBConnect();
+                Background1 bw = new Background1();
 
-                // getStockCode();
-                // stockReaTimeDataRequest();
+                Thread t2 = new Thread(new ThreadStart(bw.ReadAndInsert));
+                t2.IsBackground = true;
+                t2.Start();
+
+                /*
+                worker = new BackgroundWorker();
+                worker.DoWork += new DoWorkEventHandler(bw.ReadAndInsert);
+                worker.RunWorkerAsync();
+                */
+
+                
             }
             else
             {

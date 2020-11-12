@@ -30,7 +30,7 @@ namespace CsvFileReadAndWrite
             sw.Stop();
             Console.WriteLine("걸린 시간1 : " + sw.ElapsedMilliseconds);
             sw.Restart();
-            IEnumerable<string> fileStr2 = fileStr.Skip(0);
+            IEnumerable<string> fileStr2 = fileStr.Skip(3);
             sw.Stop();
             Console.WriteLine("걸린 시간2 : " + sw.ElapsedMilliseconds);
             sw.Restart();
