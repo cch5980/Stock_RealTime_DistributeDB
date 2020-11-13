@@ -36,34 +36,34 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.StockSearchTextBox = new System.Windows.Forms.TextBox();
             this.StockSearchButton = new System.Windows.Forms.Button();
-            this.StockListDataGridView = new System.Windows.Forms.DataGridView();
-            this.종목조회_종목코드 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.종목조회_종목명 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DataGridTotalChe = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DataGridTodayChe = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DataGridView_StockList = new System.Windows.Forms.DataGridView();
+            this.DataGrid_StockCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DataGrid_StockName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DataGrid_TotalChe = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DataGrid_TodayChe = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.StockCheDateDataGridView = new System.Windows.Forms.DataGridView();
             this.che_date = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DataGridCheVolume = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DataGridChePrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.csvOutputButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.dbInsertWaitCountLabel = new System.Windows.Forms.Label();
+            this.todayCheCountLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
+            this.AllCheCountLabel = new System.Windows.Forms.Label();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.StockListDataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DataGridView_StockList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StockCheDateDataGridView)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
@@ -116,58 +116,58 @@
             this.StockSearchButton.Text = "종목검색";
             this.StockSearchButton.UseVisualStyleBackColor = true;
             // 
-            // StockListDataGridView
+            // DataGridView_StockList
             // 
-            this.StockListDataGridView.AllowUserToAddRows = false;
-            this.StockListDataGridView.AllowUserToDeleteRows = false;
-            this.StockListDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.DataGridView_StockList.AllowUserToAddRows = false;
+            this.DataGridView_StockList.AllowUserToDeleteRows = false;
+            this.DataGridView_StockList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.StockListDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.StockListDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.종목조회_종목코드,
-            this.종목조회_종목명,
-            this.DataGridTotalChe,
-            this.DataGridTodayChe});
-            this.StockListDataGridView.Location = new System.Drawing.Point(12, 149);
-            this.StockListDataGridView.Name = "StockListDataGridView";
-            this.StockListDataGridView.RowHeadersVisible = false;
-            this.StockListDataGridView.RowHeadersWidth = 51;
-            this.StockListDataGridView.RowTemplate.Height = 27;
-            this.StockListDataGridView.Size = new System.Drawing.Size(504, 460);
-            this.StockListDataGridView.TabIndex = 2;
-            this.StockListDataGridView.DoubleClick += new System.EventHandler(this.StockListDataGridView_DoubleClick);
+            this.DataGridView_StockList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DataGridView_StockList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.DataGrid_StockCode,
+            this.DataGrid_StockName,
+            this.DataGrid_TotalChe,
+            this.DataGrid_TodayChe});
+            this.DataGridView_StockList.Location = new System.Drawing.Point(12, 149);
+            this.DataGridView_StockList.Name = "DataGridView_StockList";
+            this.DataGridView_StockList.RowHeadersVisible = false;
+            this.DataGridView_StockList.RowHeadersWidth = 51;
+            this.DataGridView_StockList.RowTemplate.Height = 27;
+            this.DataGridView_StockList.Size = new System.Drawing.Size(504, 460);
+            this.DataGridView_StockList.TabIndex = 2;
+            this.DataGridView_StockList.DoubleClick += new System.EventHandler(this.StockListDataGridView_DoubleClick);
             // 
-            // 종목조회_종목코드
+            // DataGrid_StockCode
             // 
-            this.종목조회_종목코드.HeaderText = "종목코드";
-            this.종목조회_종목코드.MinimumWidth = 6;
-            this.종목조회_종목코드.Name = "종목조회_종목코드";
-            this.종목조회_종목코드.ReadOnly = true;
-            this.종목조회_종목코드.Width = 125;
+            this.DataGrid_StockCode.HeaderText = "종목코드";
+            this.DataGrid_StockCode.MinimumWidth = 6;
+            this.DataGrid_StockCode.Name = "DataGrid_StockCode";
+            this.DataGrid_StockCode.ReadOnly = true;
+            this.DataGrid_StockCode.Width = 125;
             // 
-            // 종목조회_종목명
+            // DataGrid_StockName
             // 
-            this.종목조회_종목명.HeaderText = "종목명";
-            this.종목조회_종목명.MinimumWidth = 6;
-            this.종목조회_종목명.Name = "종목조회_종목명";
-            this.종목조회_종목명.ReadOnly = true;
-            this.종목조회_종목명.Width = 125;
+            this.DataGrid_StockName.HeaderText = "종목명";
+            this.DataGrid_StockName.MinimumWidth = 6;
+            this.DataGrid_StockName.Name = "DataGrid_StockName";
+            this.DataGrid_StockName.ReadOnly = true;
+            this.DataGrid_StockName.Width = 125;
             // 
-            // DataGridTotalChe
+            // DataGrid_TotalChe
             // 
-            this.DataGridTotalChe.HeaderText = "전체 체결수";
-            this.DataGridTotalChe.MinimumWidth = 6;
-            this.DataGridTotalChe.Name = "DataGridTotalChe";
-            this.DataGridTotalChe.ReadOnly = true;
-            this.DataGridTotalChe.Width = 125;
+            this.DataGrid_TotalChe.HeaderText = "전체 체결수";
+            this.DataGrid_TotalChe.MinimumWidth = 6;
+            this.DataGrid_TotalChe.Name = "DataGrid_TotalChe";
+            this.DataGrid_TotalChe.ReadOnly = true;
+            this.DataGrid_TotalChe.Width = 125;
             // 
-            // DataGridTodayChe
+            // DataGrid_TodayChe
             // 
-            this.DataGridTodayChe.HeaderText = "오늘 체결수";
-            this.DataGridTodayChe.MinimumWidth = 6;
-            this.DataGridTodayChe.Name = "DataGridTodayChe";
-            this.DataGridTodayChe.ReadOnly = true;
-            this.DataGridTodayChe.Width = 125;
+            this.DataGrid_TodayChe.HeaderText = "오늘 체결수";
+            this.DataGrid_TodayChe.MinimumWidth = 6;
+            this.DataGrid_TodayChe.Name = "DataGrid_TodayChe";
+            this.DataGrid_TodayChe.ReadOnly = true;
+            this.DataGrid_TodayChe.Width = 125;
             // 
             // StockCheDateDataGridView
             // 
@@ -227,12 +227,12 @@
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 63.37523F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 36.62477F));
-            this.tableLayoutPanel2.Controls.Add(this.label6, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.label5, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.dbInsertWaitCountLabel, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.todayCheCountLabel, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.label2, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.label3, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.label4, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.AllCheCountLabel, 1, 0);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
@@ -241,6 +241,32 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(504, 122);
             this.tableLayoutPanel2.TabIndex = 5;
+            // 
+            // dbInsertWaitCountLabel
+            // 
+            this.dbInsertWaitCountLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dbInsertWaitCountLabel.AutoSize = true;
+            this.dbInsertWaitCountLabel.Location = new System.Drawing.Point(322, 81);
+            this.dbInsertWaitCountLabel.Name = "dbInsertWaitCountLabel";
+            this.dbInsertWaitCountLabel.Size = new System.Drawing.Size(178, 40);
+            this.dbInsertWaitCountLabel.TabIndex = 5;
+            this.dbInsertWaitCountLabel.Text = "0";
+            this.dbInsertWaitCountLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // todayCheCountLabel
+            // 
+            this.todayCheCountLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.todayCheCountLabel.AutoSize = true;
+            this.todayCheCountLabel.Location = new System.Drawing.Point(322, 41);
+            this.todayCheCountLabel.Name = "todayCheCountLabel";
+            this.todayCheCountLabel.Size = new System.Drawing.Size(178, 39);
+            this.todayCheCountLabel.TabIndex = 4;
+            this.todayCheCountLabel.Text = "2";
+            this.todayCheCountLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label1
             // 
@@ -281,44 +307,18 @@
             this.label3.Text = "DB Insert 대기중인 레코드 수";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label4
+            // AllCheCountLabel
             // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.AllCheCountLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(322, 1);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(178, 39);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "label4";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label5
-            // 
-            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(322, 41);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(178, 39);
-            this.label5.TabIndex = 4;
-            this.label5.Text = "label5";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label6
-            // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(322, 81);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(178, 40);
-            this.label6.TabIndex = 5;
-            this.label6.Text = "label6";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.AllCheCountLabel.AutoSize = true;
+            this.AllCheCountLabel.Location = new System.Drawing.Point(322, 1);
+            this.AllCheCountLabel.Name = "AllCheCountLabel";
+            this.AllCheCountLabel.Size = new System.Drawing.Size(178, 39);
+            this.AllCheCountLabel.TabIndex = 3;
+            this.AllCheCountLabel.Text = "1";
+            this.AllCheCountLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // chart1
             // 
@@ -360,53 +360,17 @@
             this.tableLayoutPanel3.Size = new System.Drawing.Size(530, 44);
             this.tableLayoutPanel3.TabIndex = 7;
             // 
-            // button1
+            // button6
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.button6.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(3, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(82, 38);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "1분";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // button2
-            // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(91, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(82, 38);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "3분";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // button3
-            // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(179, 3);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(82, 38);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "5분";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
-            // button4
-            // 
-            this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.button4.Location = new System.Drawing.Point(267, 3);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(82, 38);
-            this.button4.TabIndex = 3;
-            this.button4.Text = "10분";
-            this.button4.UseVisualStyleBackColor = true;
+            this.button6.Location = new System.Drawing.Point(443, 3);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(84, 38);
+            this.button6.TabIndex = 5;
+            this.button6.Text = "30분";
+            this.button6.UseVisualStyleBackColor = true;
             // 
             // button5
             // 
@@ -420,17 +384,53 @@
             this.button5.Text = "15분";
             this.button5.UseVisualStyleBackColor = true;
             // 
-            // button6
+            // button4
             // 
-            this.button6.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button6.Location = new System.Drawing.Point(443, 3);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(84, 38);
-            this.button6.TabIndex = 5;
-            this.button6.Text = "30분";
-            this.button6.UseVisualStyleBackColor = true;
+            this.button4.Location = new System.Drawing.Point(267, 3);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(82, 38);
+            this.button4.TabIndex = 3;
+            this.button4.Text = "10분";
+            this.button4.UseVisualStyleBackColor = true;
+            // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.Location = new System.Drawing.Point(179, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(82, 38);
+            this.button3.TabIndex = 2;
+            this.button3.Text = "5분";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
+            // button2
+            // 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button2.Location = new System.Drawing.Point(91, 3);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(82, 38);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "3분";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(3, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(82, 38);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "1분";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -442,7 +442,7 @@
             this.Controls.Add(this.tableLayoutPanel2);
             this.Controls.Add(this.csvOutputButton);
             this.Controls.Add(this.StockCheDateDataGridView);
-            this.Controls.Add(this.StockListDataGridView);
+            this.Controls.Add(this.DataGridView_StockList);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.axKHOpenAPI1);
             this.Name = "Form1";
@@ -450,7 +450,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.StockListDataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DataGridView_StockList)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.StockCheDateDataGridView)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
@@ -466,23 +466,19 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TextBox StockSearchTextBox;
         private System.Windows.Forms.Button StockSearchButton;
-        private System.Windows.Forms.DataGridView StockListDataGridView;
+        private System.Windows.Forms.DataGridView DataGridView_StockList;
         private System.Windows.Forms.DataGridView StockCheDateDataGridView;
         private System.Windows.Forms.Button csvOutputButton;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 종목조회_종목코드;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 종목조회_종목명;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DataGridTotalChe;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DataGridTodayChe;
         private System.Windows.Forms.DataGridViewTextBoxColumn che_date;
         private System.Windows.Forms.DataGridViewTextBoxColumn DataGridCheVolume;
         private System.Windows.Forms.DataGridViewTextBoxColumn DataGridChePrice;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label dbInsertWaitCountLabel;
+        private System.Windows.Forms.Label todayCheCountLabel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label AllCheCountLabel;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Button button6;
@@ -491,6 +487,10 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_StockCode;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_StockName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_TotalChe;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_TodayChe;
     }
 }
 
