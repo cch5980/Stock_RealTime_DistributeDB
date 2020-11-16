@@ -20,49 +20,54 @@ namespace 실시간데이터수집
 {
     public partial class Form1 : Form
     {
-        int screenNum = 1000;   // 스크린 번호
-        string[] stockCodeArr;  // 종목코드(장내, 코스닥) 배열
-        // private BackgroundWorker worker;
-        private SQLiteConnection conn = null;
-        private StreamWriter writer;
-        private string csvWriteForStockCode;
-        private string che_data_str;
-        private string[] che_data_arr;
-        SQLiteCommand cmd = new SQLiteCommand();
-        Stopwatch sw = new Stopwatch();
-        private SQLiteTransaction transaction;
-        Background1 bw;
-        DB_Config db;
-        int dbCheCount; // 디비 내 전종목 체결수
-        private DB_Query db_query = new DB_Query();
+        private int screenNum = 1000;   // 스크린 번호
+        private string[] stockCodeArr;  // 종목코드(장내, 코스닥) 배열
+        private StreamWriter writer;    // 파일 쓰기 객체
+        private Background1 bw;         // 백그라운드 작업 객체
+        private int cheCount_Total;         // 전종목 전체 체결수
+        private int cheCount_Today;         // 전종목 금일 체결수
+        private DB_Query db_query = new DB_Query(DB_Config.GetDBConnection()); // 디비 Query 객체
+        private Dictionary<string, int[]> dictStockCheCount = new Dictionary<string, int[]>();
+        private string selectStockCode; // 종목별 상세 체결데이터를 위한 변수
 
         public Form1()
         {
             InitializeComponent();
-
             axKHOpenAPI1.OnEventConnect += API_onEventConnect;
             axKHOpenAPI1.OnReceiveRealData += API_onReceiveData;
-            StockSearchButton.Click += stockSearch ;
+            StockSearchButton.Click += stockSearch;
             csvOutputButton.Click += csvWriteCheDataBtnClick;
-            
             axKHOpenAPI1.CommConnect();
         }
 
         private void processInit()
         {
             // DB 연결
-            db_query.setDBConnection(DB_Config.GetDBConnection());
-            dbCheCount = db_query.Select_AllCheCount();
-            Boolean isFileExist = false;
+            // db_query.setDBConnection(DB_Config.GetDBConnection());
+            cheCount_Total = db_query.Select_CheCount_Total();
+            cheCount_Today = db_query.Select_CheCount_Today();
+            Console.WriteLine("today : " + cheCount_Today);
+            this.AllCheCountLabel.Text = cheCount_Total.ToString();
+            this.todayCheCountLabel.Text = cheCount_Today.ToString();
 
+            Boolean isFileExist = false;
             // write 파일 생성
-            if (File.Exists(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201113).csv"))
+            if (File.Exists(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201116).csv"))
             {
                 isFileExist = true;
+            } else
+            {
+                db_query.Insert_fileOffset(1, "stock(201116)");
             }
-            FileStream fs = File.Open(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201113).csv", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            FileStream fs = File.Open(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201116).csv", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             writer = new StreamWriter(fs);
             if (!isFileExist) writer.WriteLine("che_stock_code,che_date,che_time,che_price,che_change,che_change_rate,che_volume,che_cumulative_volume,che_cumulative_amount,che_open,che_high,che_low,che_trans_amount_change,che_vp,che_market_cap");
+
+            for (int i = 0; i < 100; i++)
+            {
+                DataGridView_StockCheDetail.Rows.Add();
+            }
+
         }
 
         private void API_onReceiveData(object sender, AxKHOpenAPILib._DKHOpenAPIEvents_OnReceiveRealDataEvent e)
@@ -74,9 +79,20 @@ namespace 실시간데이터수집
 
                 if (bw != null)
                 {
-                    this.AllCheCountLabel.Text = (dbCheCount + bw.getOffset()).ToString();
+                    this.AllCheCountLabel.Text = (cheCount_Total + bw.getOffset()).ToString();
                     this.todayCheCountLabel.Text = bw.getOffset().ToString();
-                    this.dbInsertWaitCountLabel.Text = bw.getWaitInsertDataCount().ToString();
+                    // this.dbInsertWaitCountLabel.Text = bw.getWaitInsertDataCount().ToString();
+                }
+                // 종목 리스트뷰
+                dictStockCheCount[e.sRealKey][0] += 1; dictStockCheCount[e.sRealKey][1] += 1;
+                this.DataGridView_StockList.Rows[dictStockCheCount[e.sRealKey][2]].Cells[2].Value = (dictStockCheCount[e.sRealKey][0]);
+                this.DataGridView_StockList.Rows[dictStockCheCount[e.sRealKey][2]].Cells[3].Value = (dictStockCheCount[e.sRealKey][1]);
+
+                if(selectStockCode == e.sRealKey)
+                {
+                    // 종목 상세뷰
+                    this.DataGridView_StockCheDetail.Rows.Insert(0, axKHOpenAPI1.GetCommRealData(e.sRealKey, 20), axKHOpenAPI1.GetCommRealData(e.sRealKey, 15), axKHOpenAPI1.GetCommRealData(e.sRealKey, 10));
+                    this.DataGridView_StockCheDetail.Rows.RemoveAt(DataGridView_StockCheDetail.Rows.Count - 1);
                 }
             }
         }
@@ -88,32 +104,14 @@ namespace 실시간데이터수집
                 Console.WriteLine("로그인 성공");
                 processInit(); // 초기 작업
 
-
-
                 getStockCode();
                 stockReaTimeDataRequest();
 
-
-                // Thread t1 = new Thread(new ThreadStart(writeCsvToDB));
-                // t1.Start();
-                // writeCsvToDB();
-                // Database.DBConnect();
-
-
                 bw = new Background1();
+                bw.setOffset(db_query.Select_fileOffset("stock(201116)"));
                 Thread t2 = new Thread(new ThreadStart(bw.ReadAndInsert));
                 t2.IsBackground = true;
                 t2.Start();
-
-
-
-                /*
-                worker = new BackgroundWorker();
-                worker.DoWork += new DoWorkEventHandler(bw.ReadAndInsert);
-                worker.RunWorkerAsync();
-                */
-
-
             }
             else
             {
@@ -128,30 +126,34 @@ namespace 실시간데이터수집
         }
 
 
-        private void stockSearch(Object sender, EventArgs e) 
+        private void stockSearch(Object sender, EventArgs e)
         {
             DataGridView_StockList.Rows.Clear();
             string searchStockTitle = StockSearchTextBox.Text;
             Console.WriteLine("검색명 : " + searchStockTitle);
-            if(searchStockTitle.Length == 0)
+            if (searchStockTitle.Length == 0)
             {
-                for (int i = 0; i < stockCodeArr.Length - 1; i++)
+                for (int i = 0; i < stockCodeArr.Length; i++)
                 {
                     DataGridView_StockList.Rows.Add();
-                    DataGridView_StockList["종목조회_종목코드", i].Value = stockCodeArr[i];
-                    DataGridView_StockList["종목조회_종목명", i].Value = axKHOpenAPI1.GetMasterCodeName(stockCodeArr[i]);
+                    DataGridView_StockList["DataGrid_StockCode", i].Value = stockCodeArr[i];
+                    DataGridView_StockList["DataGrid_StockName", i].Value = axKHOpenAPI1.GetMasterCodeName(stockCodeArr[i]);
+                    DataGridView_StockList["DataGrid_TotalChe", i].Value = dictStockCheCount[stockCodeArr[i]][0];
+                    DataGridView_StockList["DataGrid_TodayChe", i].Value = dictStockCheCount[stockCodeArr[i]][1];
                 }
             }
             else
             {
                 int idx = 0;
-                for (int i = 0; i < stockCodeArr.Length - 1; i++)
+                for (int i = 0; i < stockCodeArr.Length; i++)
                 {
-                    if(stockCodeArr[i].Contains(searchStockTitle) || axKHOpenAPI1.GetMasterCodeName(stockCodeArr[i]).Contains(searchStockTitle))
+                    if (stockCodeArr[i].Contains(searchStockTitle) || axKHOpenAPI1.GetMasterCodeName(stockCodeArr[i]).Contains(searchStockTitle))
                     {
                         DataGridView_StockList.Rows.Add();
-                        DataGridView_StockList["종목조회_종목코드", idx].Value = stockCodeArr[i];
-                        DataGridView_StockList["종목조회_종목명", idx].Value = axKHOpenAPI1.GetMasterCodeName(stockCodeArr[i]);
+                        DataGridView_StockList["DataGrid_StockCode", idx].Value = stockCodeArr[i];
+                        DataGridView_StockList["DataGrid_StockName", idx].Value = axKHOpenAPI1.GetMasterCodeName(stockCodeArr[i]);
+                        DataGridView_StockList["DataGrid_TotalChe", idx].Value = dictStockCheCount[stockCodeArr[i]][0];
+                        DataGridView_StockList["DataGrid_TodayChe", idx].Value = dictStockCheCount[stockCodeArr[i]][1];
                         idx++;
                     }
                 }
@@ -162,12 +164,12 @@ namespace 실시간데이터수집
         {
             // 실시간 연결 요청
             string stockCodeStr = "";
-            for(int i=0; i< stockCodeArr.Length; i++)
+            for (int i = 0; i < stockCodeArr.Length; i++)
             {
-                stockCodeStr += (stockCodeArr[i]+";");
+                stockCodeStr += (stockCodeArr[i] + ";");
                 // 한번 등록가능한 종목이 100개 => 100으로 나눴을때 나머지가 99이면 요청
                 // 마지막 인덱스에 도달했으면 요청
-                if((i % 100 == 99) || (i == (stockCodeArr.Length-1)))
+                if ((i % 100 == 99) || (i == (stockCodeArr.Length - 1)))
                 {
                     Console.WriteLine(i + "번째까지의 장내 데이터 호출");
                     axKHOpenAPI1.SetRealReg(getScreenNum(), stockCodeStr, "10", "1");
@@ -185,11 +187,14 @@ namespace 실시간데이터수집
 
             // 디비에서 종목 가져오기 -> 해쉬테이블에 저장
             Hashtable hashStockCode = db_query.Select_All_StockCode();
+            Hashtable hashStockCheCount_total = db_query.Select_CheCountByStockCode_Total();
+            Hashtable hashStockCheCount_today = db_query.Select_CheCountByStockCode_Today();
 
             // API종목과 디비 종목 비교
-            for(int i=0; i< stockCodeArr.Length; i++)
+            for (int i = 0; i < stockCodeArr.Length; i++)
             {
-                if(!hashStockCode.ContainsKey(stockCodeArr[i]))
+                dictStockCheCount.Add(stockCodeArr[i], new int[] { 0, 0, i });  // { 전체체결수, 오늘체결수, DataGridView Row 인덱스 }
+                if (!hashStockCode.ContainsKey(stockCodeArr[i]))
                 {
                     // 디비에 종목코드가 없다면 insert;
                     db_query.Insert_stockDB(stockCodeArr[i], axKHOpenAPI1.GetMasterCodeName(stockCodeArr[i]));
@@ -198,24 +203,18 @@ namespace 실시간데이터수집
                 DataGridView_StockList.Rows.Add();
                 DataGridView_StockList["DataGrid_StockCode", i].Value = stockCodeArr[i];
                 DataGridView_StockList["DataGrid_StockName", i].Value = axKHOpenAPI1.GetMasterCodeName(stockCodeArr[i]);
+
+                if(hashStockCheCount_total.ContainsKey(stockCodeArr[i]))
+                {
+                    dictStockCheCount[stockCodeArr[i]][0] = int.Parse(hashStockCheCount_total[stockCodeArr[i]].ToString());
+                    DataGridView_StockList["DataGrid_TotalChe", i].Value = hashStockCheCount_total[stockCodeArr[i]];
+                }
+                if(hashStockCheCount_today.ContainsKey(stockCodeArr[i]))
+                {
+                    dictStockCheCount[stockCodeArr[i]][1] = int.Parse(hashStockCheCount_today[stockCodeArr[i]].ToString());
+                    DataGridView_StockList["DataGrid_TodayChe", i].Value = hashStockCheCount_today[stockCodeArr[i]];
+                }
             }
-        }
-
-        // 날짜 변환
-        private string datetimePreProcess(string dateStr)
-        {
-            int year = DateTime.Now.Year;
-            int month = DateTime.Now.Month;
-            int day = DateTime.Now.Day;
-            int hour = Int32.Parse(dateStr.Substring(0, 2));
-            int minute = Int32.Parse(dateStr.Substring(2, 2));
-            int second = Int32.Parse(dateStr.Substring(4, 2));
-
-            DateTime date = new DateTime(year, month, day, hour, minute, second);
-            // Console.WriteLine(date.ToString());
-
-            string result = DateTime.Parse(date.ToString(), new System.Globalization.CultureInfo("ko-KR", true)).ToString("yyyy-MM-dd HH:mm:ss");
-            return result;
         }
 
         private string getScreenNum()
@@ -224,46 +223,23 @@ namespace 실시간데이터수집
             return screenNum.ToString();
         }
 
-        private void DB_Select_csvCheData(string realtime_datetime, string fileName)
-        {
-            string sql = "select * from realtime_che where stock_code = @stock_code and date(realtime_datetime) = @realtime_datetime;";
-            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-            cmd.Parameters.Add("@stock_code", DbType.String);
-            cmd.Parameters.Add("@realtime_datetime", DbType.String);
-            cmd.Prepare();
-            cmd.Parameters[0].Value = csvWriteForStockCode;
-            cmd.Parameters[1].Value = realtime_datetime;
-            SQLiteDataReader rdr = cmd.ExecuteReader();
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName + ".csv", false, System.Text.Encoding.GetEncoding("utf-8")))
-            {
-                // 각 필드에 사용될 제목을 먼저 정의해주자 
-                file.WriteLine("종목코드,체결시간,현재가,전일대비,등락율,매도호가,매수호가,거래량,누적거래량");
-                while (rdr.Read())
-                {
-                    // 필드에 값을 채워준다.  
-                    file.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8}", rdr["stock_code"].ToString(), rdr["realtime_datetime"].ToString(), rdr["realtime_price"].ToString(), rdr["realtime_yesterday"].ToString(), rdr["realtime_fluctutation"].ToString(), rdr["realtime_sell"].ToString(), rdr["realtime_buy"].ToString(), rdr["realtime_volume"].ToString(), rdr["realtime_cumul_volume"].ToString());
-                }
-                rdr.Close();
-                Console.WriteLine("csv 파일 쓰기 완료");
-            }
-        }
+
 
         // CSV 내보내기 이벤트
         private void csvWriteCheDataBtnClick(Object sender, EventArgs e)
         {
-            
+
             string fileName;
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Title = "저장경로를 지정하세요";
             saveFileDialog.OverwritePrompt = true;
 
-            if(saveFileDialog.ShowDialog() == DialogResult.OK)
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 fileName = saveFileDialog.FileName;
-                // Console.WriteLine(fileName);
 
                 List<string> checkedCheDateList = new List<string>();
-                foreach (DataGridViewRow row in StockCheDateDataGridView.Rows)
+                foreach (DataGridViewRow row in DataGridView_StockCheDetail.Rows)
                 {
                     if (row.Cells[0].Value != null && row.Cells[0].Value.ToString() == "True")
                     {
@@ -274,16 +250,17 @@ namespace 실시간데이터수집
                 // 쿼리
                 for (int i = 0; i < checkedCheDateList.Count; i++)
                 {
-                    DB_Select_csvCheData(checkedCheDateList[i], fileName);
+                    // DB_Select_csvCheData(checkedCheDateList[i], fileName);
                 }
             }
 
-            
+
         }
 
         // 종목 더블클릭 이벤트
         private void StockListDataGridView_DoubleClick(object sender, EventArgs e)
         {
+            /*
             string searchStockCode = DataGridView_StockList.CurrentRow.Cells["종목조회_종목코드"].Value.ToString();
             Console.WriteLine("선택된 종목 코드 : " + searchStockCode);
             csvWriteForStockCode = searchStockCode;
@@ -294,24 +271,33 @@ namespace 실시간데이터수집
                 StockCheDateDataGridView.Rows.Add();
                 StockCheDateDataGridView["che_date", i].Value = stockCheDateList[i];
             }
+            */
         }
 
-        private List<string> stockCheDateSelect(string stock_code)
+        private void DataGridView_StockList_MouseClick(object sender, MouseEventArgs e)
         {
-            string sql = "select strftime('%Y-%m-%d', b.realtime_datetime) as che_date from stock as a join realtime_che as b on a.stock_code = b.stock_code where a.stock_code = @STOCK_CODE group by strftime('%Y-%m-%d', b.realtime_datetime);";
-            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-            cmd.Parameters.Add("@STOCK_CODE", DbType.String);
-            cmd.Prepare();
-            cmd.Parameters[0].Value = stock_code;
-            SQLiteDataReader rdr = cmd.ExecuteReader();
-            List<string> stockCheDateList = new List<string>();
-            while (rdr.Read())
+            selectStockCode = DataGridView_StockList.CurrentRow.Cells["DataGrid_StockCode"].Value.ToString();
+            List<string[]> stockCheDataList = db_query.Select_CheDataDetail(selectStockCode);
+            Console.WriteLine("행 수 : " + DataGridView_StockCheDetail.Rows.Count);
+            if(DataGridView_StockCheDetail.Rows.Count == 0)
             {
-                stockCheDateList.Add(rdr["che_date"].ToString());
-            }
-            rdr.Close();
-            return stockCheDateList;
-        }
+                for (int i = 0; i < stockCheDataList.Count; i++)
+                {
+                    DataGridView_StockCheDetail.Rows.Add();
+                    DataGridView_StockCheDetail["DataGrid_CheDateTime", i].Value = stockCheDataList[i][0];
+                    DataGridView_StockCheDetail["DataGrid_CheVolume", i].Value = stockCheDataList[i][1];
+                    DataGridView_StockCheDetail["DataGrid_ChePrice", i].Value = stockCheDataList[i][2];
+                }
+            } else
+            {
+                for(int i=0; i<stockCheDataList.Count; i++)
+                {
+                    DataGridView_StockCheDetail.Rows[i].Cells[0].Value = stockCheDataList[i][0];
+                    DataGridView_StockCheDetail.Rows[i].Cells[1].Value = stockCheDataList[i][1];
+                    DataGridView_StockCheDetail.Rows[i].Cells[2].Value = stockCheDataList[i][2];
+                }
 
+            }
+        }
     }
 }

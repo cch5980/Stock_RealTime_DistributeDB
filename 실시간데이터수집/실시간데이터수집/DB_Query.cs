@@ -13,10 +13,114 @@ namespace 실시간데이터수집
     {
         private SQLiteConnection conn = null;
 
+        public DB_Query(SQLiteConnection conn)
+        {
+            this.conn = conn;
+        }
+
         public void setDBConnection(SQLiteConnection conn)
         {
             this.conn = conn;
         }
+
+        // file_offset 삽입(초기 로딩시)
+        public void Insert_fileOffset(int file_offset, string file_name)
+        {
+            string sql = "Insert into file (file_offset, file_name) values (@FILE_OFFSET, @FILE_NAME);";
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+            cmd.Parameters.Add("@FILE_OFFSET", DbType.Int32);
+            cmd.Parameters.Add("@FILE_NAME", DbType.String);
+            cmd.Prepare();
+            cmd.Parameters[0].Value = file_offset;
+            cmd.Parameters[1].Value = file_name;
+            cmd.ExecuteNonQuery();
+        }
+
+        // file_offset 수정
+        public void Update_fileOffset(int file_offset, string file_name)
+        {
+            string sql = "update file set file_offset = @FILE_OFFSET where file_name = @FILE_NAME;";
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+            cmd.Parameters.Add("@FILE_OFFSET", DbType.Int32);
+            cmd.Parameters.Add("@FILE_NAME", DbType.String);
+            cmd.Prepare();
+            cmd.Parameters[0].Value = file_offset;
+            cmd.Parameters[1].Value = file_name;
+            cmd.ExecuteNonQuery();
+        }
+
+        // file_offset 조회
+        public int Select_fileOffset(string file_name)
+        {
+            int result = 1;
+            string sql = "select file_offset from file where file_name = @FILE_NAME;";
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+            cmd.Parameters.Add("@FILE_NAME", DbType.String);
+            cmd.Prepare();
+            cmd.Parameters[0].Value = file_name;
+            SQLiteDataReader rdr = cmd.ExecuteReader();
+            if(rdr.FieldCount != 0)
+            {
+                rdr.Read();
+                result = rdr.GetInt32(0);
+                rdr.Close();
+                return result;
+            } else
+            {
+                rdr.Close();
+                return result;
+            }
+        } 
+
+        // 종목코드별 체결 데이터 상세 조회 - 최근 100건
+        public List<string[]> Select_CheDataDetail(string che_stock_code)
+        {
+            List<string[]> stockCheDataList = new List<string[]>();
+            string sql = "select che_date, che_time, che_volume, che_price from stock_che3 where che_stock_code = @CHE_STOCK_CODE order by che_date desc, che_time desc limit 100;";
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+            cmd.Parameters.Add("@CHE_STOCK_CODE", DbType.String);
+            cmd.Prepare();
+            cmd.Parameters[0].Value = che_stock_code;
+            SQLiteDataReader rdr = cmd.ExecuteReader();;
+            while (rdr.Read())
+            {
+                stockCheDataList.Add(new string[] { rdr["che_date"].ToString() + " " + rdr["che_time"].ToString(), rdr["che_volume"].ToString(), rdr["che_price"].ToString() });
+            }
+            rdr.Close();
+            return stockCheDataList;
+        }
+
+
+        // 종목별 전체 체결수
+        public Hashtable Select_CheCountByStockCode_Today()
+        {
+            Hashtable hashStockCheCount = new Hashtable();
+            string sql = "select che_stock_code, count(che_date) as count from stock_che3 where che_date = strftime(\'%Y-%m-%d\', \'now\', \'localtime\') group by che_stock_code;";
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+            SQLiteDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                hashStockCheCount.Add(rdr["che_stock_code"], rdr["count"]);
+            }
+            rdr.Close();
+            return hashStockCheCount;
+        }
+
+        // 종목별 전체 체결수
+        public Hashtable Select_CheCountByStockCode_Total()
+        {
+            Hashtable hashStockCheCount = new Hashtable();
+            string sql = "select che_stock_code, count(che_date) as count from stock_che3 group by che_stock_code;";
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+            SQLiteDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                hashStockCheCount.Add(rdr["che_stock_code"], rdr["count"]);
+            }
+            rdr.Close();
+            return hashStockCheCount;
+        }
+
 
         // 종목코드 및 종목명 삽입
         public void Insert_stockDB(string stock_code, string stock_name)
@@ -33,8 +137,20 @@ namespace 실시간데이터수집
             cmd.ExecuteNonQuery();
         }
 
+        // 금일 체결데이터 개수
+        public int Select_CheCount_Today()
+        {
+            string sql = "select count(che_stock_code) from stock_che3 where che_date = strftime(\'%Y-%m-%d\', \'now\', \'localtime\');";
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+            SQLiteDataReader rdr = cmd.ExecuteReader();
+            rdr.Read();
+            int result = rdr.GetInt32(0);
+            rdr.Close();
+            return result;
+        }
+
         // DB 내 체결데이터 전체 개수
-        public int Select_AllCheCount()
+        public int Select_CheCount_Total()
         {
             string sql = "select count(che_stock_code) from stock_che3;";
             SQLiteCommand cmd = new SQLiteCommand(sql, conn);
@@ -60,6 +176,7 @@ namespace 실시간데이터수집
             return hashStockCode;
         }
 
+        // 체결데이터 삽입
         public int Insert_CheDataDB(List<string[]> cheDataList)
         {
             SQLiteTransaction transaction = conn.BeginTransaction();
@@ -109,6 +226,49 @@ namespace 실시간데이터수집
             transaction.Commit();
             return idx;
         }
+
+        /*
+        public void DB_Select_csvCheData(string realtime_datetime, string fileName)
+        {
+            string sql = "select * from realtime_che where stock_code = @stock_code and date(realtime_datetime) = @realtime_datetime;";
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+            cmd.Parameters.Add("@stock_code", DbType.String);
+            cmd.Parameters.Add("@realtime_datetime", DbType.String);
+            cmd.Prepare();
+            cmd.Parameters[0].Value = csvWriteForStockCode;
+            cmd.Parameters[1].Value = realtime_datetime;
+            SQLiteDataReader rdr = cmd.ExecuteReader();
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName + ".csv", false, System.Text.Encoding.GetEncoding("utf-8")))
+            {
+                // 각 필드에 사용될 제목을 먼저 정의해주자 
+                file.WriteLine("종목코드,체결시간,현재가,전일대비,등락율,매도호가,매수호가,거래량,누적거래량");
+                while (rdr.Read())
+                {
+                    // 필드에 값을 채워준다.  
+                    file.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8}", rdr["stock_code"].ToString(), rdr["realtime_datetime"].ToString(), rdr["realtime_price"].ToString(), rdr["realtime_yesterday"].ToString(), rdr["realtime_fluctutation"].ToString(), rdr["realtime_sell"].ToString(), rdr["realtime_buy"].ToString(), rdr["realtime_volume"].ToString(), rdr["realtime_cumul_volume"].ToString());
+                }
+                rdr.Close();
+                Console.WriteLine("csv 파일 쓰기 완료");
+            }
+        }
+
+        public List<string> stockCheDateSelect(string stock_code)
+        {
+            string sql = "select strftime('%Y-%m-%d', b.realtime_datetime) as che_date from stock as a join realtime_che as b on a.stock_code = b.stock_code where a.stock_code = @STOCK_CODE group by strftime('%Y-%m-%d', b.realtime_datetime);";
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+            cmd.Parameters.Add("@STOCK_CODE", DbType.String);
+            cmd.Prepare();
+            cmd.Parameters[0].Value = stock_code;
+            SQLiteDataReader rdr = cmd.ExecuteReader();
+            List<string> stockCheDateList = new List<string>();
+            while (rdr.Read())
+            {
+                stockCheDateList.Add(rdr["che_date"].ToString());
+            }
+            rdr.Close();
+            return stockCheDateList;
+        }
+        */
 
     }
 }

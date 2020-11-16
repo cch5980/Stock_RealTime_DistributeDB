@@ -41,10 +41,10 @@
             this.DataGrid_StockName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DataGrid_TotalChe = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DataGrid_TodayChe = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.StockCheDateDataGridView = new System.Windows.Forms.DataGridView();
-            this.che_date = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DataGridCheVolume = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DataGridChePrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DataGridView_StockCheDetail = new System.Windows.Forms.DataGridView();
+            this.DataGrid_CheDateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DataGrid_CheVolume = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DataGrid_ChePrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.csvOutputButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.dbInsertWaitCountLabel = new System.Windows.Forms.Label();
@@ -64,7 +64,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView_StockList)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.StockCheDateDataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DataGridView_StockCheDetail)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.tableLayoutPanel3.SuspendLayout();
@@ -136,6 +136,7 @@
             this.DataGridView_StockList.Size = new System.Drawing.Size(504, 460);
             this.DataGridView_StockList.TabIndex = 2;
             this.DataGridView_StockList.DoubleClick += new System.EventHandler(this.StockListDataGridView_DoubleClick);
+            this.DataGridView_StockList.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DataGridView_StockList_MouseClick);
             // 
             // DataGrid_StockCode
             // 
@@ -169,48 +170,48 @@
             this.DataGrid_TodayChe.ReadOnly = true;
             this.DataGrid_TodayChe.Width = 125;
             // 
-            // StockCheDateDataGridView
+            // DataGridView_StockCheDetail
             // 
-            this.StockCheDateDataGridView.AllowUserToAddRows = false;
-            this.StockCheDateDataGridView.AllowUserToDeleteRows = false;
-            this.StockCheDateDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.DataGridView_StockCheDetail.AllowUserToAddRows = false;
+            this.DataGridView_StockCheDetail.AllowUserToDeleteRows = false;
+            this.DataGridView_StockCheDetail.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.StockCheDateDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.StockCheDateDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.che_date,
-            this.DataGridCheVolume,
-            this.DataGridChePrice});
-            this.StockCheDateDataGridView.Location = new System.Drawing.Point(532, 149);
-            this.StockCheDateDataGridView.Name = "StockCheDateDataGridView";
-            this.StockCheDateDataGridView.RowHeadersVisible = false;
-            this.StockCheDateDataGridView.RowHeadersWidth = 51;
-            this.StockCheDateDataGridView.RowTemplate.Height = 27;
-            this.StockCheDateDataGridView.Size = new System.Drawing.Size(379, 460);
-            this.StockCheDateDataGridView.TabIndex = 3;
+            this.DataGridView_StockCheDetail.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DataGridView_StockCheDetail.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.DataGrid_CheDateTime,
+            this.DataGrid_CheVolume,
+            this.DataGrid_ChePrice});
+            this.DataGridView_StockCheDetail.Location = new System.Drawing.Point(532, 149);
+            this.DataGridView_StockCheDetail.Name = "DataGridView_StockCheDetail";
+            this.DataGridView_StockCheDetail.RowHeadersVisible = false;
+            this.DataGridView_StockCheDetail.RowHeadersWidth = 51;
+            this.DataGridView_StockCheDetail.RowTemplate.Height = 27;
+            this.DataGridView_StockCheDetail.Size = new System.Drawing.Size(379, 460);
+            this.DataGridView_StockCheDetail.TabIndex = 3;
             // 
-            // che_date
+            // DataGrid_CheDateTime
             // 
-            this.che_date.HeaderText = "체결시간";
-            this.che_date.MinimumWidth = 6;
-            this.che_date.Name = "che_date";
-            this.che_date.ReadOnly = true;
-            this.che_date.Width = 125;
+            this.DataGrid_CheDateTime.HeaderText = "체결시간";
+            this.DataGrid_CheDateTime.MinimumWidth = 6;
+            this.DataGrid_CheDateTime.Name = "DataGrid_CheDateTime";
+            this.DataGrid_CheDateTime.ReadOnly = true;
+            this.DataGrid_CheDateTime.Width = 125;
             // 
-            // DataGridCheVolume
+            // DataGrid_CheVolume
             // 
-            this.DataGridCheVolume.HeaderText = "체결량";
-            this.DataGridCheVolume.MinimumWidth = 6;
-            this.DataGridCheVolume.Name = "DataGridCheVolume";
-            this.DataGridCheVolume.ReadOnly = true;
-            this.DataGridCheVolume.Width = 125;
+            this.DataGrid_CheVolume.HeaderText = "체결량";
+            this.DataGrid_CheVolume.MinimumWidth = 6;
+            this.DataGrid_CheVolume.Name = "DataGrid_CheVolume";
+            this.DataGrid_CheVolume.ReadOnly = true;
+            this.DataGrid_CheVolume.Width = 125;
             // 
-            // DataGridChePrice
+            // DataGrid_ChePrice
             // 
-            this.DataGridChePrice.HeaderText = "체결가격";
-            this.DataGridChePrice.MinimumWidth = 6;
-            this.DataGridChePrice.Name = "DataGridChePrice";
-            this.DataGridChePrice.ReadOnly = true;
-            this.DataGridChePrice.Width = 125;
+            this.DataGrid_ChePrice.HeaderText = "체결가격";
+            this.DataGrid_ChePrice.MinimumWidth = 6;
+            this.DataGrid_ChePrice.Name = "DataGrid_ChePrice";
+            this.DataGrid_ChePrice.ReadOnly = true;
+            this.DataGrid_ChePrice.Width = 125;
             // 
             // csvOutputButton
             // 
@@ -441,7 +442,7 @@
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.tableLayoutPanel2);
             this.Controls.Add(this.csvOutputButton);
-            this.Controls.Add(this.StockCheDateDataGridView);
+            this.Controls.Add(this.DataGridView_StockCheDetail);
             this.Controls.Add(this.DataGridView_StockList);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.axKHOpenAPI1);
@@ -451,7 +452,7 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView_StockList)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.StockCheDateDataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DataGridView_StockCheDetail)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
@@ -467,11 +468,8 @@
         private System.Windows.Forms.TextBox StockSearchTextBox;
         private System.Windows.Forms.Button StockSearchButton;
         private System.Windows.Forms.DataGridView DataGridView_StockList;
-        private System.Windows.Forms.DataGridView StockCheDateDataGridView;
+        private System.Windows.Forms.DataGridView DataGridView_StockCheDetail;
         private System.Windows.Forms.Button csvOutputButton;
-        private System.Windows.Forms.DataGridViewTextBoxColumn che_date;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DataGridCheVolume;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DataGridChePrice;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Label dbInsertWaitCountLabel;
         private System.Windows.Forms.Label todayCheCountLabel;
@@ -491,6 +489,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_StockName;
         private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_TotalChe;
         private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_TodayChe;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_CheDateTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_CheVolume;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_ChePrice;
     }
 }
 

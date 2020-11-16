@@ -27,11 +27,16 @@ namespace 실시간데이터수집
         private int offset = 1; // 맨 첫줄은 애트리뷰트명
         private int waitInsertDataCount = 0; // DB 삽입 대기 중인 레코드 수
         private string[] file_data_arr; // 체결 데이터
-        private DB_Query db_query = new DB_Query(); // DB 쿼리
+        private DB_Query db_query = new DB_Query(DB_Config.GetDBConnection()); // DB 쿼리
 
         public int getOffset()
         {
             return this.offset;
+        }
+
+        public void setOffset(int offset)
+        {
+            this.offset = offset;
         }
 
         public int getWaitInsertDataCount()
@@ -46,6 +51,7 @@ namespace 실시간데이터수집
                 if (file_data_arr.Length > 0)
                 {
                     waitInsertDataCount -= db_query.Insert_CheDataDB(ReadCSV());
+                    db_query.Update_fileOffset(getOffset(), "stock(201116)");
                 }
             }
         }
@@ -53,7 +59,7 @@ namespace 실시간데이터수집
         public Boolean IsReadFileRemainData()
         {
             // file share로 열어줌
-            file_data_arr = ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201113).csv").Skip(offset).Take(1000).ToArray();
+            file_data_arr = ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201116).csv").Skip(offset).Take(1000).ToArray();
             // int remainDataNum = file_data_arr.Length;
             // if (remainDataNum > 0) return true;
             // else return false;
