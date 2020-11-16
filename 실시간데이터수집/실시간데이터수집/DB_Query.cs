@@ -76,7 +76,7 @@ namespace 실시간데이터수집
         public List<string[]> Select_CheDataDetail(string che_stock_code)
         {
             List<string[]> stockCheDataList = new List<string[]>();
-            string sql = "select che_date, che_time, che_volume, che_price from stock_che3 where che_stock_code = @CHE_STOCK_CODE order by che_date desc, che_time desc limit 100;";
+            string sql = "select che_date, che_time, che_volume, che_price from stock_che where che_stock_code = @CHE_STOCK_CODE order by che_date desc, che_time desc limit 100;";
             SQLiteCommand cmd = new SQLiteCommand(sql, conn);
             cmd.Parameters.Add("@CHE_STOCK_CODE", DbType.String);
             cmd.Prepare();
@@ -95,7 +95,7 @@ namespace 실시간데이터수집
         public Hashtable Select_CheCountByStockCode_Today()
         {
             Hashtable hashStockCheCount = new Hashtable();
-            string sql = "select che_stock_code, count(che_date) as count from stock_che3 where che_date = strftime(\'%Y-%m-%d\', \'now\', \'localtime\') group by che_stock_code;";
+            string sql = "select che_stock_code, count(che_date) as count from stock_che where che_date = strftime(\'%Y-%m-%d\', \'now\', \'localtime\') group by che_stock_code;";
             SQLiteCommand cmd = new SQLiteCommand(sql, conn);
             SQLiteDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
@@ -110,7 +110,7 @@ namespace 실시간데이터수집
         public Hashtable Select_CheCountByStockCode_Total()
         {
             Hashtable hashStockCheCount = new Hashtable();
-            string sql = "select che_stock_code, count(che_date) as count from stock_che3 group by che_stock_code;";
+            string sql = "select che_stock_code, count(che_date) as count from stock_che group by che_stock_code;";
             SQLiteCommand cmd = new SQLiteCommand(sql, conn);
             SQLiteDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
@@ -140,7 +140,7 @@ namespace 실시간데이터수집
         // 금일 체결데이터 개수
         public int Select_CheCount_Today()
         {
-            string sql = "select count(che_stock_code) from stock_che3 where che_date = strftime(\'%Y-%m-%d\', \'now\', \'localtime\');";
+            string sql = "select count(che_stock_code) from stock_che where che_date = strftime(\'%Y-%m-%d\', \'now\', \'localtime\');";
             SQLiteCommand cmd = new SQLiteCommand(sql, conn);
             SQLiteDataReader rdr = cmd.ExecuteReader();
             rdr.Read();
@@ -152,7 +152,7 @@ namespace 실시간데이터수집
         // DB 내 체결데이터 전체 개수
         public int Select_CheCount_Total()
         {
-            string sql = "select count(che_stock_code) from stock_che3;";
+            string sql = "select count(che_stock_code) from stock_che;";
             SQLiteCommand cmd = new SQLiteCommand(sql, conn);
             SQLiteDataReader rdr = cmd.ExecuteReader();
             rdr.Read();
@@ -181,7 +181,7 @@ namespace 실시간데이터수집
         {
             SQLiteTransaction transaction = conn.BeginTransaction();
             SQLiteCommand cmd = new SQLiteCommand();
-            string sql = "insert into stock_che3 (che_stock_code, che_date, che_time, che_price, che_change, che_change_rate, che_volume, che_cumulative_volume, che_cumulative_amount, che_open, che_high, che_low, che_trans_amount_change, che_vp, che_market_cap) VALUES (@che_stock_code, @che_date, @che_time, @che_price, @che_change, @che_change_rate, @che_volume, @che_cumulative_volume, @che_cumulative_amount, @che_open, @che_high, @che_low, @che_trans_amount_change, @che_vp, @che_market_cap)";
+            string sql = "insert into stock_che (che_stock_code, che_date, che_time, che_price, che_change, che_change_rate, che_volume, che_cumulative_volume, che_cumulative_amount, che_open, che_high, che_low, che_trans_amount_change, che_vp, che_market_cap) VALUES (@che_stock_code, @che_date, @che_time, @che_price, @che_change, @che_change_rate, @che_volume, @che_cumulative_volume, @che_cumulative_amount, @che_open, @che_high, @che_low, @che_trans_amount_change, @che_vp, @che_market_cap)";
             cmd.Connection = conn;
             cmd.CommandText = sql;
 

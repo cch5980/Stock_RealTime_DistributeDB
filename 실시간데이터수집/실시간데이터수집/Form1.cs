@@ -52,14 +52,15 @@ namespace 실시간데이터수집
 
             Boolean isFileExist = false;
             // write 파일 생성
-            if (File.Exists(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201116).csv"))
+            
+            if (File.Exists(@File_Config.file_path + File_Config.file_name + File_Config.file_extension))
             {
                 isFileExist = true;
             } else
             {
-                db_query.Insert_fileOffset(1, "stock(201116)");
+                db_query.Insert_fileOffset(1, File_Config.file_name);
             }
-            FileStream fs = File.Open(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201116).csv", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            FileStream fs = File.Open(@File_Config.file_path + File_Config.file_name + File_Config.file_extension, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             writer = new StreamWriter(fs);
             if (!isFileExist) writer.WriteLine("che_stock_code,che_date,che_time,che_price,che_change,che_change_rate,che_volume,che_cumulative_volume,che_cumulative_amount,che_open,che_high,che_low,che_trans_amount_change,che_vp,che_market_cap");
 
@@ -108,7 +109,7 @@ namespace 실시간데이터수집
                 stockReaTimeDataRequest();
 
                 bw = new Background1();
-                bw.setOffset(db_query.Select_fileOffset("stock(201116)"));
+                bw.setOffset(db_query.Select_fileOffset(File_Config.file_name));
                 Thread t2 = new Thread(new ThreadStart(bw.ReadAndInsert));
                 t2.IsBackground = true;
                 t2.Start();

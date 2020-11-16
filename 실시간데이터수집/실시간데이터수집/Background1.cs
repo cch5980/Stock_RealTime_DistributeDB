@@ -51,7 +51,7 @@ namespace 실시간데이터수집
                 if (file_data_arr.Length > 0)
                 {
                     waitInsertDataCount -= db_query.Insert_CheDataDB(ReadCSV());
-                    db_query.Update_fileOffset(getOffset(), "stock(201116)");
+                    db_query.Update_fileOffset(getOffset(), File_Config.file_name);
                 }
             }
         }
@@ -59,7 +59,7 @@ namespace 실시간데이터수집
         public Boolean IsReadFileRemainData()
         {
             // file share로 열어줌
-            file_data_arr = ReadLines(@"C:\\Users\\cch\\Desktop\\실시간주가\\stock(201116).csv").Skip(offset).Take(1000).ToArray();
+            file_data_arr = ReadLines(@File_Config.file_path + File_Config.file_name + File_Config.file_extension).Skip(offset).Take(1000).ToArray();
             // int remainDataNum = file_data_arr.Length;
             // if (remainDataNum > 0) return true;
             // else return false;
