@@ -59,7 +59,8 @@ namespace 실시간데이터수집
             cmd.Prepare();
             cmd.Parameters[0].Value = file_name;
             SQLiteDataReader rdr = cmd.ExecuteReader();
-            if(rdr.FieldCount != 0)
+            Console.WriteLine("rdr 크기 : " + rdr.FieldCount);
+            if (rdr.FieldCount != 0)
             {
                 rdr.Read();
                 result = rdr.GetInt32(0);
@@ -84,7 +85,7 @@ namespace 실시간데이터수집
             SQLiteDataReader rdr = cmd.ExecuteReader();;
             while (rdr.Read())
             {
-                stockCheDataList.Add(new string[] { rdr["che_date"].ToString() + " " + rdr["che_time"].ToString(), rdr["che_volume"].ToString(), rdr["che_price"].ToString() });
+                stockCheDataList.Add(new string[] { rdr["che_time"].ToString(), rdr["che_volume"].ToString(), rdr["che_price"].ToString() });
             }
             rdr.Close();
             return stockCheDataList;
@@ -181,7 +182,7 @@ namespace 실시간데이터수집
         {
             SQLiteTransaction transaction = conn.BeginTransaction();
             SQLiteCommand cmd = new SQLiteCommand();
-            string sql = "insert into stock_che (che_stock_code, che_date, che_time, che_price, che_change, che_change_rate, che_volume, che_cumulative_volume, che_cumulative_amount, che_open, che_high, che_low, che_trans_amount_change, che_vp, che_market_cap) VALUES (@che_stock_code, @che_date, @che_time, @che_price, @che_change, @che_change_rate, @che_volume, @che_cumulative_volume, @che_cumulative_amount, @che_open, @che_high, @che_low, @che_trans_amount_change, @che_vp, @che_market_cap)";
+            string sql = "insert or ignore into stock_che (che_stock_code, che_date, che_time, che_price, che_change, che_change_rate, che_volume, che_cumulative_volume, che_cumulative_amount, che_open, che_high, che_low, che_trans_amount_change, che_vp, che_market_cap) VALUES (@che_stock_code, @che_date, @che_time, @che_price, @che_change, @che_change_rate, @che_volume, @che_cumulative_volume, @che_cumulative_amount, @che_open, @che_high, @che_low, @che_trans_amount_change, @che_vp, @che_market_cap)";
             cmd.Connection = conn;
             cmd.CommandText = sql;
 

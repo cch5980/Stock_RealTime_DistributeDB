@@ -75,6 +75,7 @@ namespace 실시간데이터수집
         {
             if (e.sRealType == "주식체결")
             {
+                Console.WriteLine("체결된 종목 명 : " + e.sRealKey);
                 // 종목코드, 체결날짜, 체결시간, 현재가, 전일대비, 등락율, 거래량, 누적거래량, 누적거래대금, 시가, 고가, 저가, 거래대금증감, 체결강도, 시가총액
                 csvFileWrite(e.sRealKey, DateTime.Now.ToString("yyyy-MM-dd"), axKHOpenAPI1.GetCommRealData(e.sRealKey, 20).Insert(4, ":").Insert(2, ":"), axKHOpenAPI1.GetCommRealData(e.sRealKey, 10), axKHOpenAPI1.GetCommRealData(e.sRealKey, 11), axKHOpenAPI1.GetCommRealData(e.sRealKey, 12), axKHOpenAPI1.GetCommRealData(e.sRealKey, 15), axKHOpenAPI1.GetCommRealData(e.sRealKey, 13), axKHOpenAPI1.GetCommRealData(e.sRealKey, 14), axKHOpenAPI1.GetCommRealData(e.sRealKey, 16), axKHOpenAPI1.GetCommRealData(e.sRealKey, 17), axKHOpenAPI1.GetCommRealData(e.sRealKey, 18), axKHOpenAPI1.GetCommRealData(e.sRealKey, 29), axKHOpenAPI1.GetCommRealData(e.sRealKey, 228), axKHOpenAPI1.GetCommRealData(e.sRealKey, 311));
 
@@ -92,7 +93,10 @@ namespace 실시간데이터수집
                 if(selectStockCode == e.sRealKey)
                 {
                     // 종목 상세뷰
-                    this.DataGridView_StockCheDetail.Rows.Insert(0, axKHOpenAPI1.GetCommRealData(e.sRealKey, 20), axKHOpenAPI1.GetCommRealData(e.sRealKey, 15), axKHOpenAPI1.GetCommRealData(e.sRealKey, 10));
+                    string che_time = axKHOpenAPI1.GetCommRealData(e.sRealKey, 20);
+                    // Console.WriteLine(che_time);
+                    // Console.WriteLine(DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd tt ") + che_time.Substring(0, 2) + ":" + che_time.Substring(2, 2) + ":" + che_time.Substring(4, 2), "yyyy-MM-dd tt hh:mm:ss", null));
+                    this.DataGridView_StockCheDetail.Rows.Insert(0, che_time, axKHOpenAPI1.GetCommRealData(e.sRealKey, 15), axKHOpenAPI1.GetCommRealData(e.sRealKey, 10));
                     this.DataGridView_StockCheDetail.Rows.RemoveAt(DataGridView_StockCheDetail.Rows.Count - 1);
                 }
             }
