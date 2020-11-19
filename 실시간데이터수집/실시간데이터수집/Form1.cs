@@ -29,6 +29,7 @@ namespace 실시간데이터수집
         private DB_Query db_query = new DB_Query(DB_Config.GetDBConnection()); // 디비 Query 객체
         private Dictionary<string, int[]> dictStockCheCount = new Dictionary<string, int[]>();
         private string selectStockCode; // 종목별 상세 체결데이터를 위한 변수
+        private Dictionary<string, string[]> dictMinutePriceData; // 키: 종목코드, 밸류: {체결시간(시분),시가,고가,저가,종가}
 
         public Form1()
         {
@@ -37,6 +38,7 @@ namespace 실시간데이터수집
             axKHOpenAPI1.OnReceiveRealData += API_onReceiveData;
             StockSearchButton.Click += stockSearch;
             csvOutputButton.Click += csvWriteCheDataBtnClick;
+            Button_1Min.Click += Button_1Min_Click;
             axKHOpenAPI1.CommConnect();
         }
 
@@ -127,7 +129,37 @@ namespace 실시간데이터수집
 
         private void csvFileWrite(string che_stock_code, string che_date, string che_time, string che_price, string che_change, string che_change_rate, string che_volume, string che_cumulative_volume, string che_cumulative_amount, string che_open, string che_high, string che_low, string che_trans_amount_change, string che_vp, string che_market_cap)
         {
-            writer.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}", che_stock_code, che_date, che_time, che_price, che_change, che_change_rate, che_volume, che_cumulative_volume, che_cumulative_amount, che_open, che_high, che_low, che_trans_amount_change, che_vp, che_market_cap);
+            // 1) 종목별로 현재가 기록(메모리에 저장 => 분단위로 초기화)
+            dictMinutePriceData = new Dictionary<string, string[]>();
+
+            // 값이 맨처음 들어왔을때
+            if (dictMinutePriceData[che_stock_code][1] == "0" || dictMinutePriceData[che_stock_code][0] != che_time.Substring(0, 4))
+            {
+                dictMinutePriceData[che_stock_code][1] = che_price; // 시가
+                dictMinutePriceData[che_stock_code][2] = che_price; // 고가
+                dictMinutePriceData[che_stock_code][3] = che_price; // 저가
+                dictMinutePriceData[che_stock_code][4] = che_price; // 종가
+            } else
+            {
+                dictMinutePriceData[che_stock_code][2] = Math.Max(int.Parse(dictMinutePriceData[che_stock_code][2]), int.Parse(che_price)).ToString();
+                dictMinutePriceData[che_stock_code][3] = Math.Min(int.Parse(dictMinutePriceData[che_stock_code][3]), int.Parse(che_price)).ToString();
+            }
+
+            // 1분 단위가 바뀌었으면
+            
+
+            // 2-1) 1분 내에 데이터들이 들어올때 :
+            // 2-1-1) 맨처음(00초) 들어온데이터 => 시가
+            // 2-1-2) 데이터 비교 => 고가, 저가 비교
+            // 2-1-3) 데이터의 체결시간 중 분단위가 바뀌면(or 59초에 들어온다면) => 종가
+
+            // 2-2) 1분 넘어서 데이터가 들어올때 :
+            // 2-2-1) 그 전데이터의 종가가 시가, 고가, 저가, 종가
+
+            // 3) 파일에 쓰기
+           
+
+            writer.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}", che_stock_code, che_date, che_time, che_price, che_change, che_change_rate, che_volume, che_cumulative_volume, che_cumulative_amount, dictMinutePriceData[che_stock_code][1], dictMinutePriceData[che_stock_code][2], dictMinutePriceData[che_stock_code][3], che_trans_amount_change, che_vp, che_market_cap);
         }
 
 
@@ -198,6 +230,7 @@ namespace 실시간데이터수집
             // API종목과 디비 종목 비교
             for (int i = 0; i < stockCodeArr.Length; i++)
             {
+                dictMinutePriceData.Add(stockCodeArr[i], new string[] { "0", "0", "0", "0", "0" }); // {체결시간(시분),시가,고가,저가,종가}
                 dictStockCheCount.Add(stockCodeArr[i], new int[] { 0, 0, i });  // { 전체체결수, 오늘체결수, DataGridView Row 인덱스 }
                 if (!hashStockCode.ContainsKey(stockCodeArr[i]))
                 {
@@ -301,8 +334,12 @@ namespace 실시간데이터수집
                     DataGridView_StockCheDetail.Rows[i].Cells[1].Value = stockCheDataList[i][1];
                     DataGridView_StockCheDetail.Rows[i].Cells[2].Value = stockCheDataList[i][2];
                 }
-
             }
+        }
+
+        private void Button_1Min_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

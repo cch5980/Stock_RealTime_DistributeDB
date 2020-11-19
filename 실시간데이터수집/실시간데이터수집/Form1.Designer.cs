@@ -53,20 +53,20 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.AllCheCountLabel = new System.Windows.Forms.Label();
-            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.Chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.button6 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.Button_1Min = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView_StockList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView_StockCheDetail)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Chart)).BeginInit();
             this.tableLayoutPanel3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -321,23 +321,23 @@
             this.AllCheCountLabel.Text = "1";
             this.AllCheCountLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // chart1
+            // Chart
             // 
             chartArea1.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea1);
+            this.Chart.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
-            this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(946, 159);
-            this.chart1.Name = "chart1";
+            this.Chart.Legends.Add(legend1);
+            this.Chart.Location = new System.Drawing.Point(946, 159);
+            this.Chart.Name = "Chart";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             series1.YValuesPerPoint = 4;
-            this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(571, 439);
-            this.chart1.TabIndex = 6;
-            this.chart1.Text = "chart1";
+            this.Chart.Series.Add(series1);
+            this.Chart.Size = new System.Drawing.Size(571, 439);
+            this.Chart.TabIndex = 6;
+            this.Chart.Text = "chart1";
             // 
             // tableLayoutPanel3
             // 
@@ -353,7 +353,7 @@
             this.tableLayoutPanel3.Controls.Add(this.button4, 3, 0);
             this.tableLayoutPanel3.Controls.Add(this.button3, 2, 0);
             this.tableLayoutPanel3.Controls.Add(this.button2, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.button1, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.Button_1Min, 0, 0);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(965, 109);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
@@ -421,17 +421,18 @@
             this.button2.Text = "3분";
             this.button2.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // Button_1Min
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.Button_1Min.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(3, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(82, 38);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "1분";
-            this.button1.UseVisualStyleBackColor = true;
+            this.Button_1Min.Location = new System.Drawing.Point(3, 3);
+            this.Button_1Min.Name = "Button_1Min";
+            this.Button_1Min.Size = new System.Drawing.Size(82, 38);
+            this.Button_1Min.TabIndex = 0;
+            this.Button_1Min.Text = "1분";
+            this.Button_1Min.UseVisualStyleBackColor = true;
+            this.Button_1Min.Click += new System.EventHandler(this.Button_1Min_Click);
             // 
             // Form1
             // 
@@ -439,7 +440,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1574, 631);
             this.Controls.Add(this.tableLayoutPanel3);
-            this.Controls.Add(this.chart1);
+            this.Controls.Add(this.Chart);
             this.Controls.Add(this.tableLayoutPanel2);
             this.Controls.Add(this.csvOutputButton);
             this.Controls.Add(this.DataGridView_StockCheDetail);
@@ -455,7 +456,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView_StockCheDetail)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Chart)).EndInit();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -477,14 +478,14 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label AllCheCountLabel;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
+        private System.Windows.Forms.DataVisualization.Charting.Chart Chart;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button Button_1Min;
         private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_StockCode;
         private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_StockName;
         private System.Windows.Forms.DataGridViewTextBoxColumn DataGrid_TotalChe;
