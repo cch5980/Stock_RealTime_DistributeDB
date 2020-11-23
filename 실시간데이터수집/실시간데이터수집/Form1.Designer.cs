@@ -30,7 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.axKHOpenAPI1 = new AxKHOpenAPILib.AxKHOpenAPI();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -323,15 +322,15 @@
             // 
             // Chart
             // 
+            chartArea1.AxisY.IsStartedFromZero = false;
+            chartArea1.CursorX.IsUserEnabled = true;
+            chartArea1.CursorX.IsUserSelectionEnabled = true;
             chartArea1.Name = "ChartArea1";
             this.Chart.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.Chart.Legends.Add(legend1);
             this.Chart.Location = new System.Drawing.Point(946, 159);
             this.Chart.Name = "Chart";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
-            series1.Legend = "Legend1";
             series1.Name = "Series1";
             series1.YValuesPerPoint = 4;
             this.Chart.Series.Add(series1);

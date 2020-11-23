@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Background1.cs" />
+    <Compile Include="Backtracking.cs" />
     <Compile Include="DB_Config.cs" />
     <Compile Include="DB_Query.cs" />
     <Compile Include="File_Config.cs" />

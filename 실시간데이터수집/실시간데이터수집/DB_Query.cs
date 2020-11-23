@@ -23,6 +23,49 @@ namespace 실시간데이터수집
             this.conn = conn;
         }
 
+        // 종목코드별 체결 데이터 상세 조회 - 최근 100건
+        public List<string[]> Select_CheDataDetail_Total(string che_stock_code)
+        {
+            List<string[]> stockCheDataList = new List<string[]>();
+            string sql = "select che_time, che_volume, che_price from stock_che where che_stock_code = @CHE_STOCK_CODE;";
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+            cmd.Parameters.Add("@CHE_STOCK_CODE", DbType.String);
+            cmd.Prepare();
+            cmd.Parameters[0].Value = che_stock_code;
+            SQLiteDataReader rdr = cmd.ExecuteReader(); ;
+            while (rdr.Read())
+            {
+                stockCheDataList.Add(new string[] { rdr["che_time"].ToString(), rdr["che_volume"].ToString(), rdr["che_price"].ToString() });
+            }
+            rdr.Close();
+            return stockCheDataList;
+        }
+
+        // 종목코드별 분봉 데이터 조회
+        public List<string[]> Select_MinuteData(string che_stock_code)
+        {
+            List<string[]> stockMinuteDataList = new List<string[]>();
+            string sql = "select A.che_date, strftime('%H:%M', A.che_time) as time, A.che_open as open, B.high as high, B.low as low, A.che_price as close from stock_che as A, (select che_date, max(che_time) as closetime, max(che_price) as high, min(che_price) as low from stock_che where che_stock_code = @CHE_STOCK_CODE group by che_date, strftime('%H:%M', che_time)) as B where A.che_date = B.che_date and A.che_time = B.closetime and A.che_stock_code = @CHE_STOCK_CODE group by A.che_date, strftime('%H:%M', A.che_time);";
+            SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+            cmd.Parameters.Add("@CHE_STOCK_CODE", DbType.String);
+            cmd.Prepare();
+            cmd.Parameters[0].Value = che_stock_code;
+            SQLiteDataReader rdr = cmd.ExecuteReader(); ;
+            Console.WriteLine("@@@ 종목 코드 : " + che_stock_code);
+            Console.WriteLine("rdr : " + rdr.FieldCount);
+            while (rdr.Read())
+            {
+                Console.WriteLine(rdr["time"].ToString());
+                Console.WriteLine(rdr["open"].ToString());
+                Console.WriteLine(rdr["high"].ToString());
+                Console.WriteLine(rdr["low"].ToString());
+                Console.WriteLine(rdr["close"].ToString());
+                stockMinuteDataList.Add(new string[] { rdr["time"].ToString(), rdr["open"].ToString(), rdr["high"].ToString(), rdr["low"].ToString(), rdr["close"].ToString() });
+            }
+            rdr.Close();
+            return stockMinuteDataList;
+        }
+
         // file_offset 삽입(초기 로딩시)
         public void Insert_fileOffset(int file_offset, string file_name)
         {
