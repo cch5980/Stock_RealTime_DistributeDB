@@ -27,7 +27,7 @@ namespace 실시간데이터수집
         public List<string[]> Select_CheDataDetail_Total(string che_stock_code)
         {
             List<string[]> stockCheDataList = new List<string[]>();
-            string sql = "select che_time, che_volume, che_price from stock_che where che_stock_code = @CHE_STOCK_CODE;";
+            string sql = "select che_time, che_volume, che_price from stock_che where che_stock_code = @CHE_STOCK_CODE and che_date = date('now');";
             SQLiteCommand cmd = new SQLiteCommand(sql, conn);
             cmd.Parameters.Add("@CHE_STOCK_CODE", DbType.String);
             cmd.Prepare();

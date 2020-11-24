@@ -113,6 +113,7 @@ namespace 실시간데이터수집
             {
                 Console.WriteLine("로그인 성공");
           
+                
                 Backtracking bt = new Backtracking();
 
                 Hashtable ht = db_query.Select_All_StockCode();
@@ -141,6 +142,7 @@ namespace 실시간데이터수집
                 t2.IsBackground = true;
                 t2.Start();
                 */
+                
             }
             else
             {

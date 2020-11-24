@@ -11,78 +11,82 @@ namespace 실시간데이터수집
     {
         public Boolean Pababak(List<string[]> stock_che_list)
         {
+            int criteriaNum = 10;   // 파바박 기준점
+            int cheNum = 10;        // 체결량이 10 미만인거는 제외
             Boolean flag = false;
-            // Console.WriteLine("체결 데이터 리스트 크기 : " + stock_che_list.Count);
             if (stock_che_list.Count < 1) return false;
-            // 일단 한 종목에 대해서만 찾기
-            List<List<string>> pababakList = new List<List<string>>();
-            List<string> tempList = new List<string>(); // 체결량만 저장
+            Dictionary<string, List<int>> pababakDict = new Dictionary<string, List<int>>();
+            List<string[]> tempList = new List<string[]>(); // 체결량만 저장
             string che_time = stock_che_list[0][0];
+            pababakDict.Add(che_time, new List<int>());
             // 1. 덩어리 만들기(시간 1초 동안 매수인 지점 찾기)
             for (int i = 1; i < stock_che_list.Count; i++)
             {
                 if (stock_che_list[i][0] == che_time)
                 {
-                    tempList.Add(stock_che_list[i][1]);
+                    if(int.Parse(stock_che_list[i][1]) > cheNum) pababakDict[che_time].Add(int.Parse(stock_che_list[i][1]));
                 }
                 else
                 {
+                    if (pababakDict[che_time].Count < criteriaNum) pababakDict.Remove(che_time);
                     che_time = stock_che_list[i][0];
-                    if(tempList.Count > 1) pababakList.Add(tempList);
-                    tempList = new List<string>();
+                    pababakDict.Add(che_time, new List<int>());
                 }
             }
 
-            // Console.WriteLine("덩어리들의 리스트 크기 : " + pababakList.Count);
             // 2. 덩어리들끼리 비교(해쉬)
-            Dictionary<int, List<int>> dict = new Dictionary<int, List<int>>();
-            for (int i = 0; i < pababakList.Count; i++)
+            Dictionary<string, List<string[]>> dictResult = new Dictionary<string, List<string[]>>();
+            for (int i = 0; i < pababakDict.Count - 1; i++)
             {
-                
                 Hashtable ht = new Hashtable();
-                // Console.WriteLine(i + "번째 덩어리의 크기 : " + pababakList[i].Count);
-                for (int j = 0; j < pababakList[i].Count; j++)
+                string dictKey = pababakDict.Keys.ToList()[i];
+                if (pababakDict[dictKey].Count() < criteriaNum) continue;
+
+                for (int j = 0; j < pababakDict[dictKey].Count(); j++)
                 {
-                    // Console.WriteLine("값 : " + int.Parse(pababakList[i][j]));
-                    if(!ht.ContainsKey(int.Parse(pababakList[i][j]))) ht.Add(int.Parse(pababakList[i][j]), false);
+                    if (ht.ContainsKey(pababakDict[dictKey][j])) ht[pababakDict[dictKey][j]] = ((int)ht[pababakDict[dictKey][j]] + 1);
+                    else ht.Add(pababakDict[dictKey][j], 1);
                 }
 
-                for (int k = i + 1; k < pababakList.Count; k++)
+                Hashtable copyHt = (Hashtable)ht.Clone();
+                for (int k = i + 1; k < pababakDict.Count; k++)
                 {
                     int countNum = 0;
-                    for (int t = 0; t < pababakList[k].Count; t++)
+                    string compareDictKey = pababakDict.Keys.ToList()[k];
+                    for (int t = 0; t < pababakDict[compareDictKey].Count; t++)
                     {
-                        if (ht.ContainsKey(int.Parse(pababakList[k][t])))
+                        if (copyHt.ContainsKey((int)pababakDict[compareDictKey][t]) && pababakDict[compareDictKey][t] > 10 && (int)copyHt[pababakDict[compareDictKey][t]] > 0)
                         {
-                            if(int.Parse(pababakList[k][t]) > 10 && !(Boolean) ht[int.Parse(pababakList[k][t])] )
-                            {
-                                countNum++;
-                                ht[int.Parse(pababakList[k][t])] = true;
-                            }
+                            countNum++;
+                            copyHt[pababakDict[compareDictKey][t]] = ((int)copyHt[pababakDict[compareDictKey][t]] - 1);
                         }
 
                     }
-                    // 3. 해쉬의 크기가 덩어리의 절반 크기보다 크면 파바박 의심
-                    if (countNum >= 4)
+                    // 3. 파바박 의심
+                    if (countNum >= criteriaNum)
                     {
                         flag = true;
-                        // Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@파바박 있다");
-                        if(!dict.ContainsKey(i)) dict.Add(i, new List<int>());
-                        Console.WriteLine("============경계 =============");
-                        for (int z=0; z < pababakList[i].Count; z++)
+                        double jaccard = Math.Round((double)countNum * 100 / ((double)pababakDict[dictKey].Count + (double)pababakDict[compareDictKey].Count - (double)countNum));
+                        if (!dictResult.ContainsKey(dictKey)) dictResult.Add(dictKey, new List<string[]>());
+                        Console.WriteLine("===============경계=================");
+                        Console.WriteLine("자카드 지수 : " + jaccard);
+                        Console.WriteLine(dictKey +  " 시간의 집합");
+                        pababakDict[dictKey].Sort();
+                        for (int n = 0; n < pababakDict[dictKey].Count; n++)
                         {
-                            if((Boolean) ht[int.Parse(pababakList[i][z])])
-                            {
-                                Console.WriteLine("파바박 데이터 : " + pababakList[i][z]);
-                            }
-                            
+                            Console.Write(pababakDict[dictKey][n] + " ");
                         }
-                        dict[i].Add(k);
+                        Console.WriteLine("\n" + compareDictKey + " 시간의 집합");
+                        pababakDict[compareDictKey].Sort();
+                        for (int n = 0; n < pababakDict[compareDictKey].Count; n++)
+                        {
+                            Console.Write(pababakDict[compareDictKey][n] + " ");
+                        }
+                        Console.WriteLine();
+                        dictResult[dictKey].Add(new string[] { compareDictKey, jaccard.ToString() });
                     }
                 }
             }
-
-            // Console.WriteLine("딕셔너리 크기 : " + dict.Count);
             return flag;
         }
     }
